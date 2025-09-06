@@ -46,6 +46,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // <-- Add this line for serving static files
 app.UseSession(); // Enable session middleware
 app.UseRouting();
+app.MapGet("/", () => "Hello from Railway!");
 
 app.UseAuthorization();
 
