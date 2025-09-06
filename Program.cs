@@ -24,10 +24,14 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+var connectionString = 
+    builder.Configuration.GetConnectionString("MySqlConnection") ??
+    Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
+
+
 // Configure Entity Framework
 builder.Services.AddDbContext<DmsDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("MySqlConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Register services
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
