@@ -6,6 +6,7 @@ using CQCDMS.Repositories;
 using CQCDMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
@@ -45,6 +46,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles(); // <-- Add this line for serving static files
 app.UseSession(); // Enable session middleware
 app.UseRouting();
+app.MapGet("/", () => "Hello from Railway!");
 
 app.UseAuthorization();
 
