@@ -1,0 +1,150 @@
+@{
+    ViewData["Title"] = "البحث في الفاكسات";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-primary mb-4">
+                <i class="bi bi-search me-2"></i>
+                    البحث في أرشيف الفاكسات
+            </h2>
+        </div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">نموذج البحث</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Search">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="searchTerm" class="form-label">كلمة البحث</label>
+                                <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                                       placeholder="أدخل كلمة البحث" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="searchType" class="form-label">نوع البحث</label>
+                                <select class="form-select" id="searchType" name="searchType">
+                                    <option value="all">البحث في جميع الحقول</option>
+                                    <option value="name">اسم الوثيقة</option>
+                                    <option value="sender">المرسل</option>
+                                    <option value="recipient">المستقبل</option>
+                                    <option value="faxnumber">رقم الفاكس</option>
+                                    <option value="faxtype">نوع الفاكس</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary w-100">بحث</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Search Options -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">خيارات البحث السريع</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="quickSearch('today')">
+                                    فاكسات اليوم
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="quickSearch('week')">
+                                    فاكسات الأسبوع
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="quickSearch('month')">
+                                    فاكسات الشهر
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="d-grid">
+                                <button class="btn btn-outline-primary" onclick="quickSearch('all')">
+                                    جميع الفاكسات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Statistics -->
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">150</h5>
+                    <p class="card-text">إجمالي الفاكسات</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-success">85</h5>
+                    <p class="card-text">فاكسات مرسلة</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-info">65</h5>
+                    <p class="card-text">فاكسات واردة</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">12</h5>
+                    <p class="card-text">فاكسات اليوم</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function quickSearch(type) {
+        // Quick search functionality
+        switch(type) {
+            case 'today':
+                alert('البحث في فاكسات اليوم');
+                break;
+            case 'week':
+                alert('البحث في فاكسات الأسبوع');
+                break;
+            case 'month':
+                alert('البحث في فاكسات الشهر');
+                break;
+            case 'all':
+                alert('عرض جميع الفاكسات');
+                break;
+        }
+    }
+</script>

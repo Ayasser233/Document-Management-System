@@ -1,0 +1,880 @@
+﻿@model IEnumerable<CQCDMS.Models.Document>?
+@{
+    ViewData["Title"] = "إدارة الفاكسات";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="bi bi-gear-fill me-3"></i>
+                    إدارة الفاكسات
+                </h2>
+                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
+                    data-bs-target="#addFaxModal">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    إضافة فاكس جديد
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Search and Filter Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel me-2"></i>
+                        البحث والفلترة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="searchInput" class="form-label">البحث</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="ابحث عن فاكس...">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="statusFilter" class="form-label">الحالة</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">جميع الحالات</option>
+                                <option value="sent">صادر</option>
+                                <option value="received">وارد</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="faxTypeFilter" class="form-label">نوع الفاكس</label>
+                            <select class="form-select" id="faxTypeFilter">
+                                <option value="">جميع الأنواع</option>
+                                <option value="official">رسمي</option>
+                                <option value="administrative">إداري</option>
+                                <option value="financial">مالي</option>
+                                <option value="legal">قانوني</option>
+                                <option value="medical">طبي</option>
+                                <option value="educational">تعليمي</option>
+                                <option value="commercial">تجاري</option>
+                                <option value="personal">شخصي</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="dateFilter" class="form-label">فترة زمنية</label>
+                            <select class="form-select" id="dateFilter">
+                                <option value="">جميع التواريخ</option>
+                                <option value="today">اليوم</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                                <option value="year">هذا العام</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">
+                                <i class="bi bi-search me-2"></i>
+                                بحث
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fax Management Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table me-2"></i>
+                        قائمة الفاكسات
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="faxTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>مسلسل</th>
+                                    <th>رقم القيد</th>
+                                    <th>التاريخ</th>
+                                    <th>اسم الموضوع</th>
+                                    <th>صادر</th>
+                                    <th>وارد</th>
+                                    <th>الحالة</th>
+                                    <th>الفرع/الجهة</th>
+                                    <th>عدد الصفحات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var document in Model.Select((doc, index) => new { doc, index }))
+                                    {
+                                        <tr>
+                                            <td>@(document.index + 1)</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(document.doc.FaxNumber))
+                                                {
+                                                    <span class="badge bg-info">@document.doc.FaxNumber</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <small>@document.doc.DateCreated.ToString("dd/MM/yyyy")</small>
+                                                <br>
+                                                <small class="text-muted">@document.doc.DateCreated.ToString("HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <strong>@document.doc.Name</strong>
+                                                @if (!string.IsNullOrEmpty(document.doc.Notes))
+                                                {
+                                                    <br>
+
+                                                    <small class="text-muted">@document.doc.Notes</small>
+                                                }
+                                            </td>
+                                            <td>@document.doc.Sender</td>
+                                            <td>@document.doc.Recipient</td>
+                                            <td>
+                                                @switch (document.doc.Status?.ToLower())
+                                                {
+                                                    case "sent":
+                                                        <span class="badge bg-success">صادر</span>
+                                                        break;
+                                                    case "received":
+                                                        <span class="badge bg-primary">وارد</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@(document.doc.Status ?? "غير محدد")</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(document.doc.FaxType))
+                                                {
+                                                    @switch (document.doc.FaxType?.ToLower())
+                                                    {
+                                                        case "official":
+                                                            <span class="badge bg-primary">رسمي</span>
+                                                            break;
+                                                        case "administrative":
+                                                            <span class="badge bg-secondary">إداري</span>
+                                                            break;
+                                                        case "financial":
+                                                            <span class="badge bg-success">مالي</span>
+                                                            break;
+                                                        case "legal":
+                                                            <span class="badge bg-warning">قانوني</span>
+                                                            break;
+                                                        case "medical":
+                                                            <span class="badge bg-danger">طبي</span>
+                                                            break;
+                                                        case "educational":
+                                                            <span class="badge bg-info">تعليمي</span>
+                                                            break;
+                                                        case "commercial":
+                                                            <span class="badge bg-dark">تجاري</span>
+                                                            break;
+                                                        case "personal":
+                                                            <span class="badge bg-light text-dark">شخصي</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary">@document.doc.FaxType</span>
+                                                            break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (document.doc.NumberOfPages > 0)
+                                                {
+                                                    <span class="badge bg-secondary">@document.doc.NumberOfPages صفحة</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <button type="button" class="btn btn-outline-info"
+                                                        onclick="viewFax(@document.doc.Id)" title="عرض">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning"
+                                                        onclick="editFax(@document.doc.Id)" title="تعديل">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-success"
+                                                        onclick="downloadFax(@document.doc.Id)" title="تحميل">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger"
+                                                        onclick="deleteFax(@document.doc.Id)" title="حذف">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Fax Modal -->
+<div class="modal fade" id="addFaxModal" tabindex="-1" aria-labelledby="addFaxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="addFaxModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    إضافة فاكس جديد
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addFaxForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="addFaxName" class="form-label">اسم الموضوع *</label>
+                            <input type="text" class="form-control" id="addFaxName" name="Name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="addFaxNumber" class="form-label">رقم القيد</label>
+                            <input type="text" class="form-control" id="addFaxNumber" name="FaxNumber"
+                                placeholder="12345">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="addSender" class="form-label">الصادر *</label>
+                            <input type="text" class="form-control" id="addSender" name="Sender" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="addRecipient" class="form-label">الوارد *</label>
+                            <input type="text" class="form-control" id="addRecipient" name="Recipient" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الحالة</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="addStatus" id="addStatusSent"
+                                        value="sent" checked>
+                                    <label class="form-check-label" for="addStatusSent">
+                                        صادر
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="addStatus" id="addStatusReceived"
+                                        value="received">
+                                    <label class="form-check-label" for="addStatusReceived">
+                                        وارد
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="addFaxType" class="form-label">الفرع/الجهة</label>
+                            <select class="form-select" id="addFaxType" name="FaxType">
+                                <option value="">اختر الفرع/الجهة</option>
+                                <option value="official">رسمي</option>
+                                <option value="administrative">إداري</option>
+                                <option value="financial">مالي</option>
+                                <option value="legal">قانوني</option>
+                                <option value="medical">طبي</option>
+                                <option value="educational">تعليمي</option>
+                                <option value="commercial">تجاري</option>
+                                <option value="personal">شخصي</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="addPages" class="form-label">عدد الصفحات</label>
+                            <input type="number" class="form-control" id="addPages" name="NumberOfPages" min="1"
+                                value="1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addNotes" class="form-label">ملاحظات</label>
+                        <textarea class="form-control" id="addNotes" name="Notes" rows="3"
+                            placeholder="أدخل أي ملاحظات إضافية..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addFile" class="form-label">رفع ملف</label>
+                        <input type="file" class="form-control" id="addFile" accept=".pdf">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-success" onclick="addFax()">
+                    <i class="bi bi-save me-2"></i>
+                    حفظ الفاكس
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Fax Modal -->
+<div class="modal fade" id="editFaxModal" tabindex="-1" aria-labelledby="editFaxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="editFaxModalLabel">
+                    <i class="bi bi-pencil me-2"></i>
+                    تعديل الفاكس
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editFaxForm">
+                    <input type="hidden" id="editFaxId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editFaxName" class="form-label">اسم الموضوع *</label>
+                            <input type="text" class="form-control" id="editFaxName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editFaxNumber" class="form-label">رقم القيد</label>
+                            <input type="text" class="form-control" id="editFaxNumber">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editSender" class="form-label">الصادر *</label>
+                            <input type="text" class="form-control" id="editSender" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editRecipient" class="form-label">وارد *</label>
+                            <input type="text" class="form-control" id="editRecipient" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">الحالة</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="editStatus" id="editStatusSent"
+                                        value="sent">
+                                    <label class="form-check-label" for="editStatusSent">
+                                        صادر
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="editStatus"
+                                        id="editStatusReceived" value="received">
+                                    <label class="form-check-label" for="editStatusReceived">
+                                        وارد
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="editFaxType" class="form-label">الفرع/الجهة</label>
+                            <select class="form-select" id="editFaxType">
+                                <option value="">اختر الفرع/الجهة</option>
+                                <option value="official">رسمي</option>
+                                <option value="administrative">إداري</option>
+                                <option value="financial">مالي</option>
+                                <option value="legal">قانوني</option>
+                                <option value="medical">طبي</option>
+                                <option value="educational">تعليمي</option>
+                                <option value="commercial">تجاري</option>
+                                <option value="personal">شخصي</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="editPages" class="form-label">عدد الصفحات</label>
+                            <input type="number" class="form-control" id="editPages" min="1" value="1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNotes" class="form-label">ملاحظات</label>
+                        <textarea class="form-control" id="editNotes" rows="3"
+                            placeholder="أدخل أي ملاحظات إضافية..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-warning" onclick="updateFax()">
+                    <i class="bi bi-save me-2"></i>
+                    تحديث الفاكس
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Fax Modal -->
+<div class="modal fade" id="viewFaxModal" tabindex="-1" aria-labelledby="viewFaxModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="viewFaxModalLabel">
+                    <i class="bi bi-eye me-2"></i>
+                    عرض تفاصيل الفاكس
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>اسم الموضوع:</strong>
+                        <p id="viewFaxName" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>رقم الفاكس:</strong>
+                        <p id="viewFaxNumber" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>الصادر:</strong>
+                        <p id="viewSender" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>الوارد:</strong>
+                        <p id="viewRecipient" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>الحالة:</strong>
+                        <p id="viewStatus" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>نوع الفاكس:</strong>
+                        <p id="viewFaxType" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>عدد الصفحات:</strong>
+                        <p id="viewPages" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>ملاحظات:</strong>
+                        <p id="viewNotes" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>التاريخ:</strong>
+                        <p id="viewDateCreated" class="mb-0"></p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-primary" onclick="downloadFax()">
+                    <i class="bi bi-download me-2"></i>
+                    تحميل الملف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Loading and utility functions
+        function showLoading() {
+            const loadingHtml = '<div class="text-center p-3"><i class="bi bi-hourglass-split fa-spin"></i> جاري التحميل...</div>';
+            return loadingHtml;
+        }
+
+        function showAlert(message, type = 'success') {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'bi-exclamation-triangle' : 'bi-check-circle';
+
+            const alertHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                        <i class="${icon} me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>`;
+
+            const container = document.querySelector('.container-fluid');
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+
+            // Auto dismiss after 3 seconds
+            setTimeout(() => {
+                const alert = container.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 3000);
+        }
+
+        function getFaxTypeDisplay(type) {
+            const types = {
+                'official': { text: 'رسمي', class: 'bg-primary' },
+                'administrative': { text: 'إداري', class: 'bg-secondary' },
+                'financial': { text: 'مالي', class: 'bg-success' },
+                'legal': { text: 'قانوني', class: 'bg-warning' },
+                'medical': { text: 'طبي', class: 'bg-info' },
+                'educational': { text: 'تعليمي', class: 'bg-dark' },
+                'commercial': { text: 'تجاري', class: 'bg-primary' },
+                'personal': { text: 'شخصي', class: 'bg-light text-dark' }
+            };
+            return types[type] || { text: type, class: 'bg-secondary' };
+        }
+
+        function getStatusDisplay(status) {
+            const statuses = {
+                'sent': { text: 'صادر', class: 'bg-success' },
+                'received': { text: 'وارد', class: 'bg-primary' },
+            };
+            return statuses[status] || { text: status, class: 'bg-secondary' };
+        }
+
+        // CRUD Operations
+        async function addFax() {
+            try {
+                // Get form values
+                const name = document.getElementById('addFaxName').value.trim();
+                const faxNumber = document.getElementById('addFaxNumber').value.trim();
+                const sender = document.getElementById('addSender').value.trim();
+                const recipient = document.getElementById('addRecipient').value.trim();
+                const status = document.querySelector('input[name="addStatus"]:checked').value; // Updated for radio button
+                const faxType = document.getElementById('addFaxType').value;
+                const pages = document.getElementById('addPages').value;
+                const notes = document.getElementById('addNotes').value.trim();
+
+                // Debug logging
+                console.log('Form data before sending:', {
+                    name: name,
+                    faxNumber: faxNumber,
+                    sender: sender,
+                    recipient: recipient,
+                    status: status,
+                    faxType: faxType,
+                    pages: pages,
+                    notes: notes
+                });
+
+                // Validation
+                if (!name) {
+                    showAlert('يرجى إدخال اسم الموضوع', 'error');
+                    return;
+                }
+                if (!sender) {
+                    showAlert('يرجى إدخال اسم الصادر', 'error');
+                    return;
+                }
+                if (!recipient) {
+                    showAlert('يرجى إدخال اسم الوارد', 'error');
+                    return;
+                }
+
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('Name', name);
+                formData.append('FaxNumber', faxNumber);
+                formData.append('Sender', sender);
+                formData.append('Recipient', recipient);
+                formData.append('Status', status);
+                formData.append('FaxType', faxType);
+                formData.append('NumberOfPages', parseInt(pages) || 1);
+                formData.append('Notes', notes);
+
+                // Add file if selected
+                const fileInput = document.getElementById('addFile');
+                if (fileInput && fileInput.files[0]) {
+                    formData.append('file', fileInput.files[0]);
+                    console.log('File added:', fileInput.files[0].name);
+                }
+
+                // Debug FormData contents
+                console.log('FormData contents:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Send to server
+                const response = await fetch('/Home/AddDocument', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('Server response:', result);
+
+                if (result.success) {
+                    showAlert('تم حفظ الفاكس بنجاح');
+                    $('#addFaxModal').modal('hide');
+                    document.getElementById('addFaxForm').reset();
+                    // Reset radio buttons to default
+                    document.getElementById('addStatusSent').checked = true;
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showAlert(result.message || 'حدث خطأ أثناء حفظ الفاكس', 'error');
+                    console.error('Error details:', result);
+                }
+            } catch (error) {
+                console.error('Error saving fax:', error);
+                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        // Update the editFax function
+        async function editFax(id) {
+            try {
+                // Fetch fax data from server
+                const response = await fetch(`/Home/GetDocument?id=${id}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+
+                    // Populate edit form
+                    document.getElementById('editFaxId').value = data.id;
+                    document.getElementById('editFaxName').value = data.name || '';
+                    document.getElementById('editFaxNumber').value = data.faxNumber || '';
+                    document.getElementById('editSender').value = data.sender || '';
+                    document.getElementById('editRecipient').value = data.recipient || '';
+
+                    // Set radio button for status
+                    if (data.status === 'sent') {
+                        document.getElementById('editStatusSent').checked = true;
+                    } else if (data.status === 'received') {
+                        document.getElementById('editStatusReceived').checked = true;
+                    }
+
+                    document.getElementById('editFaxType').value = data.faxType || '';
+                    document.getElementById('editPages').value = data.numberOfPages || 1;
+                    document.getElementById('editNotes').value = data.notes || '';
+
+                    $('#editFaxModal').modal('show');
+                } else {
+                    showAlert(result.message || 'لم يتم العثور على الفاكس', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading fax for edit:', error);
+                showAlert('حدث خطأ في تحميل بيانات الفاكس', 'error');
+            }
+        }
+
+        async function updateFax() {
+            try {
+                const id = document.getElementById('editFaxId').value;
+                const name = document.getElementById('editFaxName').value.trim();
+                const sender = document.getElementById('editSender').value.trim();
+                const recipient = document.getElementById('editRecipient').value.trim();
+
+                if (!name || !sender || !recipient) {
+                    showAlert('يرجى ملء جميع الحقول المطلوبة', 'error');
+                    return;
+                }
+
+                const documentData = {
+                    id: parseInt(id),
+                    name: name,
+                    faxNumber: document.getElementById('editFaxNumber').value.trim(),
+                    sender: sender,
+                    recipient: recipient,
+                    status: document.querySelector('input[name="editStatus"]:checked').value, // Updated for radio button
+                    faxType: document.getElementById('editFaxType').value,
+                    numberOfPages: parseInt(document.getElementById('editPages').value) || 1,
+                    notes: document.getElementById('editNotes').value.trim()
+                };
+
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                const response = await fetch('/Home/UpdateDocument', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token
+                    },
+                    body: JSON.stringify(documentData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('تم تحديث الفاكس بنجاح');
+                    $('#editFaxModal').modal('hide');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showAlert(result.message || 'حدث خطأ أثناء تحديث الفاكس', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating fax:', error);
+                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        async function viewFax(id) {
+            try {
+                const response = await fetch(`/Home/GetDocument?id=${id}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+                    const faxType = getFaxTypeDisplay(data.faxType);
+                    const status = getStatusDisplay(data.status);
+
+                    document.getElementById('viewFaxName').textContent = data.name || 'غير محدد';
+                    document.getElementById('viewFaxNumber').textContent = data.faxNumber || 'غير محدد';
+                    document.getElementById('viewSender').textContent = data.sender || 'غير محدد';
+                    document.getElementById('viewRecipient').textContent = data.recipient || 'غير محدد';
+                    document.getElementById('viewStatus').innerHTML = `<span class="badge ${status.class}">${status.text}</span>`;
+                    document.getElementById('viewFaxType').innerHTML = `<span class="badge ${faxType.class}">${faxType.text}</span>`;
+                    document.getElementById('viewPages').textContent = `${data.numberOfPages || 1} صفحة`;
+                    document.getElementById('viewNotes').textContent = data.notes || 'لا توجد ملاحظات';
+                    document.getElementById('viewDateCreated').textContent = data.uploadDate || 'غير محدد';
+                    $('#viewFaxModal').modal('show');
+                } else {
+                    showAlert(result.message || 'لم يتم العثور على الفاكس', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading fax details:', error);
+                showAlert('حدث خطأ في تحميل تفاصيل الفاكس', 'error');
+            }
+        }
+
+        async function deleteFax(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا الفاكس؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                return;
+            }
+
+            try {
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Send as form data instead of JSON
+                const formData = new FormData();
+                formData.append('id', id);
+
+                const response = await fetch('/Home/DeleteDocument', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('تم حذف الفاكس بنجاح');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showAlert(result.message || 'حدث خطأ أثناء حذف الفاكس', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting fax:', error);
+                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+        function downloadFax(id) {
+            // For now, just show a message - file download would need additional implementation
+            showAlert('سيتم تنفيذ تحميل الملفات في التحديث القادم', 'info');
+        }
+
+        async function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const status = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const faxType = document.getElementById('faxTypeFilter') ? document.getElementById('faxTypeFilter').value : '';
+
+            try {
+                // Get anti-forgery token
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                const response = await fetch('/Home/Search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: new URLSearchParams({
+                        searchTerm: searchTerm,
+                        searchType: 'all',
+                        status: status,
+                        faxType: faxType
+                    })
+                });
+
+                if (response.ok) {
+                    showAlert('تم تطبيق الفلاتر بنجاح');
+                    setTimeout(() => {
+                        window.location.href = '/Home/Search?' + new URLSearchParams({
+                            searchTerm: searchTerm,
+                            status: status,
+                            faxType: faxType
+                        });
+                    }, 1000);
+                } else {
+                    showAlert('حدث خطأ في تطبيق الفلاتر', 'error');
+                }
+            } catch (error) {
+                console.error('Error applying filters:', error);
+                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+            }
+        }
+
+        // Load statistics on page load
+        async function loadStatistics() {
+            try {
+                const response = await fetch('/Home/GetStatistics');
+                const data = await response.json();
+
+                document.getElementById('totalCount').textContent = data.total || 0;
+                document.getElementById('sentCount').textContent = data.sent || 0;
+                document.getElementById('receivedCount').textContent = data.received || 0;
+                document.getElementById('pendingCount').textContent = data.pending || 0;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#faxTable tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStatistics();
+        });
+    </script>
+}

@@ -1,0 +1,391 @@
+@{
+    ViewData["Title"] = "التقارير";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-primary mb-4">
+                <i class="bi bi-bar-chart-line me-3"></i>
+                التقارير والإحصائيات
+            </h2>
+        </div>
+    </div>
+
+    <!-- إحصائيات سريعة -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">إجمالي الفاكسات</h6>
+                            <h2 class="mb-0">1,247</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-file-earmark-text fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">فاكسات مُرسلة</h6>
+                            <h2 class="mb-0">782</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-arrow-up-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">فاكسات مُستقبلة</h6>
+                            <h2 class="mb-0">465</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-arrow-down-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">قيد المعالجة</h6>
+                            <h2 class="mb-0">23</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-clock-history fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- أنواع التقارير -->
+    <div class="row">
+        <!-- التقارير اليومية -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-day me-2"></i>
+                        التقارير اليومية
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="dailyDate" class="form-label">اختر التاريخ</label>
+                                <input type="date" class="form-control" id="dailyDate" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-primary w-100">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>
+                                    إنشاء التقرير
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            فاكسات اليوم
+                            <span class="badge bg-primary rounded-pill">45</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            مُرسل اليوم
+                            <span class="badge bg-success rounded-pill">28</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            مُستقبل اليوم
+                            <span class="badge bg-info rounded-pill">17</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- التقارير الشهرية -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-month me-2"></i>
+                        التقارير الشهرية
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="monthlyDate" class="form-label">اختر الشهر</label>
+                                <input type="month" class="form-control" id="monthlyDate" value="@DateTime.Now.ToString("yyyy-MM")">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-success w-100">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>
+                                    إنشاء التقرير
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            فاكسات الشهر
+                            <span class="badge bg-primary rounded-pill">1,247</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            متوسط يومي
+                            <span class="badge bg-warning rounded-pill">40</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            أعلى يوم
+                            <span class="badge bg-danger rounded-pill">89</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير المرسلين -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        تقارير المرسلين
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="senderSelect" class="form-label">اختر المرسل</label>
+                        <select class="form-select" id="senderSelect">
+                            <option value="">جميع المرسلين</option>
+                            <option value="جهة حكومية أ">جهة حكومية أ</option>
+                            <option value="جهة حكومية ب">جهة حكومية ب</option>
+                            <option value="شركة خاصة">شركة خاصة</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-info w-100 mb-3">
+                        <i class="bi bi-graph-up me-2"></i>
+                        عرض إحصائيات المرسل
+                    </button>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>المرسل</th>
+                                    <th>العدد</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>جهة حكومية أ</td>
+                                    <td><span class="badge bg-primary">234</span></td>
+                                </tr>
+                                <tr>
+                                    <td>جهة حكومية ب</td>
+                                    <td><span class="badge bg-primary">189</span></td>
+                                </tr>
+                                <tr>
+                                    <td>شركة خاصة</td>
+                                    <td><span class="badge bg-primary">156</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير الحالة -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart me-2"></i>
+                        تقارير الحالة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="border rounded p-3">
+                                <h4 class="text-success">62.7%</h4>
+                                <small class="text-muted">مُرسل بنجاح</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-3">
+                                <h4 class="text-info">37.3%</h4>
+                                <small class="text-muted">مُستقبل</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 62.7%">
+                            مُرسل (782)
+                        </div>
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 37.3%">
+                            مُستقبل (465)
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-warning w-100">
+                        <i class="bi bi-file-earmark-chart me-2"></i>
+                        تقرير حالة مفصل
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- التقارير المخصصة -->
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-sliders me-2"></i>
+                        التقارير المخصصة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="fromDate" class="form-label">من تاريخ</label>
+                                <input type="date" class="form-control" id="fromDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="toDate" class="form-label">إلى تاريخ</label>
+                                <input type="date" class="form-control" id="toDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="statusFilter" class="form-label">الحالة</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">جميع الحالات</option>
+                                    <option value="sent">مُرسل</option>
+                                    <option value="received">مُستقبل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="reportType" class="form-label">نوع التقرير</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="summary">ملخص</option>
+                                    <option value="detailed">تفصيلي</option>
+                                    <option value="statistics">إحصائي</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="senderFilter" class="form-label">المرسل (اختياري)</label>
+                                <input type="text" class="form-control" id="senderFilter" placeholder="اسم المرسل">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="recipientFilter" class="form-label">المستقبل (اختياري)</label>
+                                <input type="text" class="form-control" id="recipientFilter" placeholder="اسم المستقبل">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary btn-lg me-3">
+                                <i class="bi bi-file-earmark-pdf me-2"></i>
+                                إنشاء PDF
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg me-3">
+                                <i class="bi bi-file-earmark-excel me-2"></i>
+                                تصدير Excel
+                            </button>
+                            <button type="button" class="btn btn-info btn-lg">
+                                <i class="bi bi-printer me-2"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الرسوم البيانية -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        الرسوم البيانية والتحليلات
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">إحصائيات آخر 7 أيام</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="bg-light p-4 rounded">
+                                        <i class="bi bi-bar-chart fs-1 text-primary mb-3"></i>
+                                        <p class="text-muted">سيتم إضافة الرسم البياني هنا</p>
+                                        <small class="text-muted">Chart.js أو مكتبة أخرى للرسوم البيانية</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">توزيع الفاكسات حسب النوع</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="bg-light p-4 rounded">
+                                        <i class="bi bi-pie-chart fs-1 text-success mb-3"></i>
+                                        <p class="text-muted">سيتم إضافة الرسم الدائري هنا</p>
+                                        <small class="text-muted">مخطط دائري لتوزيع أنواع الفاكسات</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // تحديد التاريخ الحالي للحقول
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const toDateField = document.getElementById('toDate');
+            if (toDateField) {
+                toDateField.value = today;
+            }
+            
+            // تحديد تاريخ قبل شهر للحقل "من تاريخ"
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            const fromDateField = document.getElementById('fromDate');
+            if (fromDateField) {
+                fromDateField.value = lastMonth.toISOString().split('T')[0];
+            }
+        });
+    </script>
+}
