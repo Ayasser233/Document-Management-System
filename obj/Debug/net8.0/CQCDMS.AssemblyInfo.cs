@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CQCDMS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9cbe1a59ad0b8f1c13ac8b40a73d3e55ccf6f1e7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2620f06deee21324af926ba247a87eb1e1a452da")]
 [assembly: System.Reflection.AssemblyProductAttribute("CQCDMS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CQCDMS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
