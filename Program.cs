@@ -6,7 +6,6 @@ using CQCDMS.Repositories;
 using CQCDMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews(options =>
@@ -24,18 +23,15 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-var connectionString = 
-    builder.Configuration.GetConnectionString("MySqlConnection") ??
-    Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
-
-
 // Configure Entity Framework
 builder.Services.AddDbContext<DmsDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(builder.Configuration.GetConnectionString("MySqlConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))));
 
 // Register services
 builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 

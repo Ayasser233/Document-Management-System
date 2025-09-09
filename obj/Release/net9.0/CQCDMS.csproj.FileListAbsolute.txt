@@ -213,3 +213,10 @@ D:\CQCDMS\obj\Release\net9.0\CQCDMS.pdb
 D:\CQCDMS\obj\Release\net9.0\CQCDMS.genruntimeconfig.cache
 D:\CQCDMS\obj\Release\net9.0\ref\CQCDMS.dll
 D:\CQCDMS\obj\Release\net9.0\staticwebassets.upToDateCheck.txt
+D:\CQCDMS\bin\Release\net9.0\publish\web.config
+D:\CQCDMS\bin\Release\net9.0\publish\appsettings.Development.json
+D:\CQCDMS\bin\Release\net9.0\publish\appsettings.json
+D:\CQCDMS\bin\Release\net9.0\publish\CQCDMS.deps.json
+D:\CQCDMS\bin\Release\net9.0\publish\CQCDMS.runtimeconfig.json
+D:\CQCDMS\bin\Release\net9.0\publish\CQCDMS.staticwebassets.endpoints.json
+D:\CQCDMS\obj\Release\net9.0\CQCDMS.sourcelink.json

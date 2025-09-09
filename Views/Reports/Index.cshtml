@@ -1,0 +1,661 @@
+@model ReportsViewModel
+@{
+    ViewData["Title"] = "التقارير";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-primary mb-4">
+                <i class="bi bi-bar-chart-line me-3"></i>
+                التقارير والإحصائيات
+            </h2>
+        </div>
+    </div>
+
+    <!-- إحصائيات سريعة -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">إجمالي الفاكسات</h6>
+                            <h2 class="mb-0">@Model.TotalDocuments.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-file-earmark-text fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">فاكسات صادرة</h6>
+                            <h2 class="mb-0">@Model.SentDocuments.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-arrow-up-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="card-title">فاكسات واردة </h6>
+                            <h2 class="mb-0">@Model.ReceivedDocuments.ToString("N0")</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-arrow-down-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- أنواع التقارير -->
+    <div class="row">
+        <!-- التقارير اليومية -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-day me-2"></i>
+                        التقارير اليومية
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="dailyDate" class="form-label">اختر التاريخ</label>
+                                <input type="date" class="form-control" id="dailyDate" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-primary w-100" onclick="generateDailyReport()">
+                                    <i class="bi bi-file-earmark-pdf me-2"></i>
+                                    إنشاء التقرير
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="list-group" id="dailyReportStats">
+                        @if (Model.TodayReport != null)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                فاكسات اليوم
+                                <span class="badge bg-primary rounded-pill">@Model.TodayReport.TotalDocuments</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                صادر اليوم
+                                <span class="badge bg-success rounded-pill">@Model.TodayReport.SentDocuments</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                وارد اليوم
+                                <span class="badge bg-info rounded-pill">@Model.TodayReport.ReceivedDocuments</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                فاكسات اليوم
+                                <span class="badge bg-primary rounded-pill">0</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                صادر اليوم
+                                <span class="badge bg-success rounded-pill">0</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                وارد اليوم
+                                <span class="badge bg-info rounded-pill">0</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- التقارير الشهرية -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-month me-2"></i>
+                        التقارير الشهرية
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form class="mb-3">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label for="monthlyDate" class="form-label">اختر الشهر</label>
+                                <input type="month" class="form-control" id="monthlyDate" value="@DateTime.Now.ToString("yyyy-MM")">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="button" class="btn btn-success w-100" onclick="generateMonthlyReport()">
+                                    <i class="bi bi-file-earmark-excel me-2"></i>
+                                    إنشاء التقرير
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="list-group" id="monthlyReportStats">
+                        @if (Model.CurrentMonthReport != null)
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                فاكسات الشهر
+                                <span class="badge bg-primary rounded-pill">@Model.CurrentMonthReport.TotalDocuments</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                متوسط يومي
+                                <span class="badge bg-warning rounded-pill">@Model.CurrentMonthReport.DailyAverage.ToString("F1")</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                أعلى يوم
+                                <span class="badge bg-danger rounded-pill">@Model.CurrentMonthReport.HighestDay</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                فاكسات الشهر
+                                <span class="badge bg-primary rounded-pill">0</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                متوسط يومي
+                                <span class="badge bg-warning rounded-pill">0</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                أعلى يوم
+                                <span class="badge bg-danger rounded-pill">0</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير المرسلين -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-lines-fill me-2"></i>
+                        تقارير المرسلين
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="senderSelect" class="form-label">اختر المرسل</label>
+                        <select class="form-select" id="senderSelect">
+                            <option value="">جميع المرسلين</option>
+                            <option value="جهة حكومية أ">جهة حكومية أ</option>
+                            <option value="جهة حكومية ب">جهة حكومية ب</option>
+                            <option value="شركة خاصة">شركة خاصة</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-info w-100 mb-3" onclick="loadSenderStatistics()">
+                        <i class="bi bi-graph-up me-2"></i>
+                        عرض إحصائيات المرسل
+                    </button>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>المرسل</th>
+                                    <th>العدد</th>
+                                </tr>
+                            </thead>
+                            <tbody id="senderStatsTable">
+                                @if (Model.TopSenders.Any())
+                                {
+                                    @foreach (var sender in Model.TopSenders)
+                                    {
+                                        <tr>
+                                            <td>@sender.SenderName</td>
+                                            <td><span class="badge bg-primary">@sender.DocumentCount</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted">لا توجد بيانات</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير الحالة -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart me-2"></i>
+                        تقارير الحالة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center mb-3" id="statusReportData">
+                        @if (Model.StatusReport != null)
+                        {
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h4 class="text-success">@Model.StatusReport.SentPercentage.ToString("F1")%</h4>
+                                    <small class="text-muted">صادر بنجاح</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h4 class="text-info">@Model.StatusReport.ReceivedPercentage.ToString("F1")%</h4>
+                                    <small class="text-muted">وارد</small>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h4 class="text-success">0%</h4>
+                                    <small class="text-muted">مُرسل بنجاح</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border rounded p-3">
+                                    <h4 class="text-info">0%</h4>
+                                    <small class="text-muted">مُستقبل</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="progress mb-3" style="height: 25px;" id="statusProgressBar">
+                        @if (Model.StatusReport != null)
+                        {
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.StatusReport.SentPercentage%">
+                                مُرسل (@Model.StatusReport.SentDocuments)
+                            </div>
+                            <div class="progress-bar bg-info" role="progressbar" style="width: @Model.StatusReport.ReceivedPercentage%">
+                                مُستقبل (@Model.StatusReport.ReceivedDocuments)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="progress-bar bg-secondary" role="progressbar" style="width: 100%">
+                                لا توجد بيانات
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-warning w-100" onclick="generateStatusReport()">
+                        <i class="bi bi-file-earmark-chart me-2"></i>
+                        تقرير حالة مفصل
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- التقارير المخصصة -->
+        <div class="col-12 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-sliders me-2"></i>
+                        التقارير المخصصة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="fromDate" class="form-label">من تاريخ</label>
+                                <input type="date" class="form-control" id="fromDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="toDate" class="form-label">إلى تاريخ</label>
+                                <input type="date" class="form-control" id="toDate">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="statusFilter" class="form-label">الحالة</label>
+                                <select class="form-select" id="statusFilter">
+                                    <option value="">جميع الحالات</option>
+                                    <option value="sent">مُرسل</option>
+                                    <option value="received">مُستقبل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="reportType" class="form-label">نوع التقرير</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="summary">ملخص</option>
+                                    <option value="detailed">تفصيلي</option>
+                                    <option value="statistics">إحصائي</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="senderFilter" class="form-label">المرسل (اختياري)</label>
+                                <input type="text" class="form-control" id="senderFilter" placeholder="اسم المرسل">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="recipientFilter" class="form-label">المستقبل (اختياري)</label>
+                                <input type="text" class="form-control" id="recipientFilter" placeholder="اسم المستقبل">
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary btn-lg me-3">
+                                <i class="bi bi-file-earmark-pdf me-2"></i>
+                                إنشاء PDF
+                            </button>
+                            <button type="button" class="btn btn-success btn-lg me-3">
+                                <i class="bi bi-file-earmark-excel me-2"></i>
+                                تصدير Excel
+                            </button>
+                            <button type="button" class="btn btn-info btn-lg">
+                                <i class="bi bi-printer me-2"></i>
+                                طباعة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الرسوم البيانية -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up me-2"></i>
+                        الرسوم البيانية والتحليلات
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">إحصائيات آخر 7 أيام</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="bg-light p-4 rounded">
+                                        <i class="bi bi-bar-chart fs-1 text-primary mb-3"></i>
+                                        <p class="text-muted">سيتم إضافة الرسم البياني هنا</p>
+                                        <small class="text-muted">Chart.js أو مكتبة أخرى للرسوم البيانية</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">توزيع الفاكسات حسب النوع</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="bg-light p-4 rounded">
+                                        <i class="bi bi-pie-chart fs-1 text-success mb-3"></i>
+                                        <p class="text-muted">سيتم إضافة الرسم الدائري هنا</p>
+                                        <small class="text-muted">مخطط دائري لتوزيع أنواع الفاكسات</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // تحديد التاريخ الحالي للحقول
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            const toDateField = document.getElementById('toDate');
+            if (toDateField) {
+                toDateField.value = today;
+            }
+            
+            // تحديد تاريخ قبل شهر للحقل "من تاريخ"
+            const lastMonth = new Date();
+            lastMonth.setMonth(lastMonth.getMonth() - 1);
+            const fromDateField = document.getElementById('fromDate');
+            if (fromDateField) {
+                fromDateField.value = lastMonth.toISOString().split('T')[0];
+            }
+        });
+
+        // إنشاء التقرير اليومي
+        function generateDailyReport() {
+            const dateInput = document.getElementById('dailyDate');
+            const selectedDate = dateInput.value;
+            
+            if (!selectedDate) {
+                alert('يرجى اختيار التاريخ');
+                return;
+            }
+
+            fetch('/Reports/GetDailyReport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: JSON.stringify(selectedDate)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateDailyStats(data.data);
+                } else {
+                    alert('خطأ في إنشاء التقرير: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+        }
+
+        // تحديث إحصائيات اليوم
+        function updateDailyStats(data) {
+            const statsContainer = document.getElementById('dailyReportStats');
+            statsContainer.innerHTML = `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    فاكسات اليوم (${data.dateArabic})
+                    <span class="badge bg-primary rounded-pill">${data.totalDocuments}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    مُرسل
+                    <span class="badge bg-success rounded-pill">${data.sentDocuments}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    مُستقبل
+                    <span class="badge bg-info rounded-pill">${data.receivedDocuments}</span>
+                </div>
+            `;
+
+            // عرض تفاصيل إضافية إذا كانت متوفرة
+            if (data.typeBreakdown && data.typeBreakdown.length > 0) {
+                let typeHtml = '<div class="mt-3"><h6>توزيع حسب النوع:</h6>';
+                data.typeBreakdown.forEach(type => {
+                    typeHtml += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            ${type.type}
+                            <span class="badge ${type.badgeClass} rounded-pill">${type.count} (${type.percentage.toFixed(1)}%)</span>
+                        </div>
+                    `;
+                });
+                typeHtml += '</div>';
+                statsContainer.innerHTML += typeHtml;
+            }
+        }
+
+        // إنشاء التقرير الشهري
+        function generateMonthlyReport() {
+            const monthInput = document.getElementById('monthlyDate');
+            const selectedMonth = monthInput.value;
+            
+            if (!selectedMonth) {
+                alert('يرجى اختيار الشهر');
+                return;
+            }
+
+            const [year, month] = selectedMonth.split('-').map(Number);
+
+            fetch('/Reports/GetMonthlyReport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: JSON.stringify({ year: year, month: month })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateMonthlyStats(data.data);
+                } else {
+                    alert('خطأ في إنشاء التقرير: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+        }
+
+        // تحديث إحصائيات الشهر
+        function updateMonthlyStats(data) {
+            const statsContainer = document.getElementById('monthlyReportStats');
+            statsContainer.innerHTML = `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    فاكسات ${data.monthName} ${data.year}
+                    <span class="badge bg-primary rounded-pill">${data.totalDocuments}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    متوسط يومي
+                    <span class="badge bg-warning rounded-pill">${data.dailyAverage}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    أعلى يوم
+                    <span class="badge bg-danger rounded-pill">${data.highestDay}</span>
+                </div>
+            `;
+        }
+
+        // تحديث تقرير الحالة
+        function generateStatusReport() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+
+            const requestData = {};
+            if (fromDate) requestData.startDate = fromDate;
+            if (toDate) requestData.endDate = toDate;
+
+            fetch('/Reports/GetStatusReport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateStatusReport(data.data);
+                } else {
+                    alert('خطأ في إنشاء التقرير: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+        }
+
+        // تحديث بيانات تقرير الحالة
+        function updateStatusReport(data) {
+            // تحديث النسب المئوية
+            document.getElementById('statusReportData').innerHTML = `
+                <div class="col-6">
+                    <div class="border rounded p-3">
+                        <h4 class="text-success">${data.sentPercentage}%</h4>
+                        <small class="text-muted">مُرسل بنجاح</small>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border rounded p-3">
+                        <h4 class="text-info">${data.receivedPercentage}%</h4>
+                        <small class="text-muted">مُستقبل</small>
+                    </div>
+                </div>
+            `;
+
+            // تحديث شريط التقدم
+            document.getElementById('statusProgressBar').innerHTML = `
+                <div class="progress-bar bg-success" role="progressbar" style="width: ${data.sentPercentage}%">
+                    مُرسل (${data.sentDocuments})
+                </div>
+                <div class="progress-bar bg-info" role="progressbar" style="width: ${data.receivedPercentage}%">
+                    مُستقبل (${data.receivedDocuments})
+                </div>
+            `;
+        }
+
+        // تحميل إحصائيات المرسلين
+        function loadSenderStatistics() {
+            fetch('/Reports/GetSenderStatistics', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateSenderStats(data.data);
+                } else {
+                    alert('خطأ في جلب الإحصائيات: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ في الاتصال بالخادم');
+            });
+        }
+
+        // تحديث جدول إحصائيات المرسلين
+        function updateSenderStats(data) {
+            const tableBody = document.getElementById('senderStatsTable');
+            if (data && data.length > 0) {
+                tableBody.innerHTML = data.slice(0, 10).map(sender => `
+                    <tr>
+                        <td>${sender.senderName}</td>
+                        <td><span class="badge bg-primary">${sender.documentCount}</span></td>
+                    </tr>
+                `).join('');
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">لا توجد بيانات</td></tr>';
+            }
+        }
+    </script>
+}

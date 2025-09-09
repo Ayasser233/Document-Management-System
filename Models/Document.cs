@@ -18,7 +18,7 @@ namespace CQCDMS.Models
         
         public string? Status { get; set; }
         
-        public string? FaxType { get; set; } // e.g., "Official", "Administrative", "Financial", "Legal"
+        public string? FaxType { get; set; } // e.g., "planning_training_operations", "needs_technical_affairs", "intelligence_modern_systems", etc.
         
         public int? NumberOfPages { get; set; }
         

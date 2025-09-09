@@ -82,21 +82,68 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> DownloadDocument(int id)
     {
+        var document = await _documentService.GetDocumentByIdAsync(id);
+        if (!document.Success || document.Data == null)
+        {
+            return NotFound("الوثيقة غير موجودة");
+        }
+
         var result = await _documentService.DownloadDocumentAsync(id);
         if (result.Success && result.Data != null)
         {
-            var document = await _documentService.GetDocumentByIdAsync(id);
-            var fileName = document.Data?.Name + ".pdf";
-            return File(result.Data, "application/octet-stream", fileName);
+            var doc = document.Data;
+            
+            // Determine file name and extension
+            var fileName = doc.Name ?? "وثيقة";
+            var fileExtension = "";
+            
+            // Try to get original file extension from FilePath
+            if (!string.IsNullOrEmpty(doc.FilePath))
+            {
+                fileExtension = Path.GetExtension(doc.FilePath);
+            }
+            
+            // If no extension found, default to .pdf
+            if (string.IsNullOrEmpty(fileExtension))
+            {
+                fileExtension = ".pdf";
+            }
+            
+            // Sanitize file name for download
+            var sanitizedFileName = fileName.Replace(" ", "_") + fileExtension;
+            
+            // Determine content type based on file extension
+            var contentType = GetContentType(fileExtension);
+            
+            return File(result.Data, contentType, sanitizedFileName);
         }
+        
         return NotFound(result.Message);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Search(string searchTerm, string searchType, string status, string faxType)
+    private string GetContentType(string fileExtension)
     {
-        var result = await _documentService.SearchDocumentsAsync(searchTerm, searchType, status, faxType);
-        return View(result.Data ?? []);
+        return fileExtension.ToLower() switch
+        {
+            ".pdf" => "application/pdf",
+            ".doc" => "application/msword",
+            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".xls" => "application/vnd.ms-excel",
+            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            ".txt" => "text/plain",
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            ".zip" => "application/zip",
+            _ => "application/octet-stream"
+        };
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Search(string searchTerm, string searchType, string status, string faxType, string? dateFilter = null)
+    {
+        var result = await _documentService.SearchDocumentsAsync(searchTerm, searchType, status, faxType, dateFilter);
+        return Json(new { success = result.Success, data = result.Data, message = result.Message });
     }
 
     public async Task<IActionResult> Search()
@@ -119,11 +166,6 @@ public class HomeController : Controller
             });
         }
         return Json(new { total = 0, sent = 0, received = 0 });
-    }
-
-    public IActionResult Reports()
-    {
-        return View();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

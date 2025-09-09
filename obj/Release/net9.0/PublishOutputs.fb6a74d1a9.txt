@@ -1,6 +1,12 @@
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\CQCDMS.exe
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\web.config
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\appsettings.Development.json
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\appsettings.json
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\appsettings.Development.json
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\appsettings.json
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\CQCDMS.deps.json
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\CQCDMS.runtimeconfig.json
+D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\publish\CQCDMS.staticwebassets.endpoints.json
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\CQCDMS.dll
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\CQCDMS.runtimeconfig.json
 D:\CQCDMS\obj\Release\net9.0\PubTmp\Out\CQCDMS.pdb

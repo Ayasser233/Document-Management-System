@@ -1,49 +1,101 @@
+@model IEnumerable<CQCDMS.Models.Document>?
 @{
     ViewData["Title"] = "البحث في الفاكسات";
 }
 
+@Html.AntiForgeryToken()
+
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <h2 class="text-primary mb-4">
-                <i class="bi bi-search me-2"></i>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="bi bi-search me-3"></i>
                     البحث في أرشيف الفاكسات
-            </h2>
+                </h2>
+                <a href="/Home/Management" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    العودة لإدارة الفاكسات
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Search Form -->
+    <!-- Advanced Search Form -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">نموذج البحث</h5>
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-funnel me-2"></i>
+                        البحث المتقدم
+                    </h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" asp-action="Search">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="searchTerm" class="form-label">كلمة البحث</label>
-                                <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
-                                       placeholder="أدخل كلمة البحث" required>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label for="searchType" class="form-label">نوع البحث</label>
-                                <select class="form-select" id="searchType" name="searchType">
-                                    <option value="all">البحث في جميع الحقول</option>
-                                    <option value="name">اسم الوثيقة</option>
-                                    <option value="sender">المرسل</option>
-                                    <option value="recipient">المستقبل</option>
-                                    <option value="faxnumber">رقم الفاكس</option>
-                                    <option value="faxtype">نوع الفاكس</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 mb-3">
-                                <label class="form-label">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary w-100">بحث</button>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="searchInput" class="form-label">كلمة البحث</label>
+                            <input type="text" class="form-control" id="searchInput" 
+                                   placeholder="ابحث في جميع الحقول..." 
+                                   value="@ViewBag.SearchTerm">
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="searchType" class="form-label">نوع البحث</label>
+                            <select class="form-select" id="searchType">
+                                <option value="all">جميع الحقول</option>
+                                <option value="name">اسم الموضوع</option>
+                                <option value="sender">الصادر</option>
+                                <option value="recipient">الوارد</option>
+                                <option value="faxnumber">رقم القيد</option>
+                                <option value="notes">الملاحظات</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="statusFilter" class="form-label">الحالة</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">جميع الحالات</option>
+                                <option value="sent">صادر</option>
+                                <option value="received">وارد</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="faxTypeFilter" class="form-label">الفرع/الجهة</label>
+                            <select class="form-select" id="faxTypeFilter">
+                                <option value="">جميع الأنواع</option>
+                                <option value="planning_training_operations">إتجاه التخطيط والتدريب والعمليات</option>
+                                <option value="needs_technical_affairs">إتجاه الإحتياجات والشئون الفنية</option>
+                                <option value="intelligence_modern_systems">إتجاه الذكاء والأنظمة الحديثة</option>
+                                <option value="systems_research">إتجاه النظم والبحوث</option>
+                                <option value="command_control_mechanisms">إتجاه ألية القيادة والسيطرة</option>
+                                <option value="organization_management">فرع التنظيم والإدارة</option>
+                                <option value="military_secretariat">فرع السكرتارية العسكرية</option>
+                                <option value="officer_affairs">فرع شئون ضباط</option>
+                                <option value="information_warfare">فرع حرب المعلومات</option>
+                                <option value="development_technical_security">إتجاه التطوير والتأمين الفني</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label for="dateFilter" class="form-label">فترة زمنية</label>
+                            <select class="form-select" id="dateFilter">
+                                <option value="">جميع التواريخ</option>
+                                <option value="today">اليوم</option>
+                                <option value="week">هذا الأسبوع</option>
+                                <option value="month">هذا الشهر</option>
+                                <option value="year">هذا العام</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1 mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-primary" onclick="performSearch()" title="بحث">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="clearSearch()" title="مسح">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,37 +106,48 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">خيارات البحث السريع</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning me-2"></i>
+                        البحث السريع
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <div class="d-grid">
-                                <button class="btn btn-outline-primary" onclick="quickSearch('today')">
-                                    فاكسات اليوم
-                                </button>
-                            </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-info w-100" onclick="quickSearch('today')">
+                                <i class="bi bi-calendar-day me-1"></i>
+                                اليوم
+                            </button>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="d-grid">
-                                <button class="btn btn-outline-primary" onclick="quickSearch('week')">
-                                    فاكسات الأسبوع
-                                </button>
-                            </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-info w-100" onclick="quickSearch('week')">
+                                <i class="bi bi-calendar-week me-1"></i>
+                                الأسبوع
+                            </button>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="d-grid">
-                                <button class="btn btn-outline-primary" onclick="quickSearch('month')">
-                                    فاكسات الشهر
-                                </button>
-                            </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-info w-100" onclick="quickSearch('month')">
+                                <i class="bi bi-calendar-month me-1"></i>
+                                الشهر
+                            </button>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="d-grid">
-                                <button class="btn btn-outline-primary" onclick="quickSearch('all')">
-                                    جميع الفاكسات
-                                </button>
-                            </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-success w-100" onclick="quickSearch('sent')">
+                                <i class="bi bi-arrow-up-circle me-1"></i>
+                                الصادر
+                            </button>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-primary w-100" onclick="quickSearch('received')">
+                                <i class="bi bi-arrow-down-circle me-1"></i>
+                                الوارد
+                            </button>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button class="btn btn-outline-secondary w-100" onclick="quickSearch('all')">
+                                <i class="bi bi-collection me-1"></i>
+                                الكل
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -92,59 +155,546 @@
         </div>
     </div>
 
-    <!-- Search Statistics -->
+    <!-- Search Results -->
     <div class="row">
-        <div class="col-md-3 mb-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">150</h5>
-                    <p class="card-text">إجمالي الفاكسات</p>
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-table me-2"></i>
+                            نتائج البحث
+                        </h5>
+                        <span id="resultsCount" class="badge bg-light text-dark">
+                            @(Model?.Count() ?? 0) نتيجة
+                        </span>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-success">85</h5>
-                    <p class="card-text">فاكسات مرسلة</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-info">65</h5>
-                    <p class="card-text">فاكسات واردة</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">12</h5>
-                    <p class="card-text">فاكسات اليوم</p>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="searchResultsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>مسلسل</th>
+                                    <th>رقم القيد</th>
+                                    <th>تاريخ الاستلام</th>
+                                    <th>اسم الموضوع</th>
+                                    <th>صادر</th>
+                                    <th>وارد</th>
+                                    <th>الحالة</th>
+                                    <th>الفرع/الجهة</th>
+                                    <th>عدد الصفحات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    @foreach (var document in Model.Select((doc, index) => new { doc, index }))
+                                    {
+                                        <tr>
+                                            <td>@(document.index + 1)</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(document.doc.FaxNumber))
+                                                {
+                                                    <span class="badge bg-info">@document.doc.FaxNumber</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <small>@document.doc.DateCreated.ToString("dd/MM/yyyy")</small>
+                                                <br>
+                                                <small class="text-muted">@document.doc.DateCreated.ToString("HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                <strong>@document.doc.Name</strong>
+                                                @if (!string.IsNullOrEmpty(document.doc.Notes))
+                                                {
+                                                    <br>
+                                                    <small class="text-muted">@document.doc.Notes</small>
+                                                }
+                                            </td>
+                                            <td>@document.doc.Sender</td>
+                                            <td>@document.doc.Recipient</td>
+                                            <td>
+                                                @switch (document.doc.Status?.ToLower())
+                                                {
+                                                    case "sent":
+                                                        <span class="badge bg-success">صادر</span>
+                                                        break;
+                                                    case "received":
+                                                        <span class="badge bg-primary">وارد</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@(document.doc.Status ?? "غير محدد")</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(document.doc.FaxType))
+                                                {
+                                                    @switch (document.doc.FaxType?.ToLower())
+                                                    {
+                                                        case "planning_training_operations":
+                                                            <span class="badge bg-primary">إتجاه التخطيط والتدريب والعمليات</span>
+                                                            break;
+                                                        case "needs_technical_affairs":
+                                                            <span class="badge bg-secondary">إتجاه الإحتياجات والشئون الفنية</span>
+                                                            break;
+                                                        case "intelligence_modern_systems":
+                                                            <span class="badge bg-success">إتجاه الذكاء والأنظمة الحديثة</span>
+                                                            break;
+                                                        case "systems_research":
+                                                            <span class="badge bg-warning">إتجاه النظم والبحوث</span>
+                                                            break;
+                                                        case "command_control_mechanisms":
+                                                            <span class="badge bg-danger">إتجاه ألية القيادة والسيطرة</span>
+                                                            break;
+                                                        case "organization_management":
+                                                            <span class="badge bg-info">فرع التنظيم والإدارة</span>
+                                                            break;
+                                                        case "military_secretariat":
+                                                            <span class="badge bg-dark">فرع السكرتارية العسكرية</span>
+                                                            break;
+                                                        case "officer_affairs":
+                                                            <span class="badge bg-light text-dark">فرع شئون ضباط</span>
+                                                            break;
+                                                        case "information_warfare":
+                                                            <span class="badge bg-primary">فرع حرب المعلومات</span>
+                                                            break;
+                                                        case "development_technical_security":
+                                                            <span class="badge bg-secondary">إتجاه التطوير والتأمين الفني</span>
+                                                            break;
+                                                        default:
+                                                            <span class="badge bg-secondary">@document.doc.FaxType</span>
+                                                            break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (document.doc.NumberOfPages > 0)
+                                                {
+                                                    <span class="badge bg-secondary">@document.doc.NumberOfPages صفحة</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">غير محدد</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <button type="button" class="btn btn-outline-info"
+                                                        onclick="viewDocument(@document.doc.Id)" title="عرض">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-success"
+                                                        onclick="downloadDocument(@document.doc.Id)" title="تحميل">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                    <a href="/Home/Management" class="btn btn-outline-warning" title="تعديل">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center p-4 text-muted">
+                                            <i class="bi bi-search me-2"></i>
+                                            قم بإجراء بحث للحصول على النتائج
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    function quickSearch(type) {
-        // Quick search functionality
-        switch(type) {
-            case 'today':
-                alert('البحث في فاكسات اليوم');
-                break;
-            case 'week':
-                alert('البحث في فاكسات الأسبوع');
-                break;
-            case 'month':
-                alert('البحث في فاكسات الشهر');
-                break;
-            case 'all':
-                alert('عرض جميع الفاكسات');
-                break;
+<!-- View Document Modal -->
+<div class="modal fade" id="viewDocumentModal" tabindex="-1" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="viewDocumentModalLabel">
+                    <i class="bi bi-eye me-2"></i>
+                    عرض تفاصيل الفاكس
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>اسم الموضوع:</strong>
+                        <p id="viewDocName" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>رقم القيد:</strong>
+                        <p id="viewDocNumber" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>صادر:</strong>
+                        <p id="viewDocSender" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>وارد:</strong>
+                        <p id="viewDocRecipient" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>الحالة:</strong>
+                        <p id="viewDocStatus" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>الفرع/الجهة:</strong>
+                        <p id="viewDocType" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>عدد الصفحات:</strong>
+                        <p id="viewDocPages" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>تاريخ الاستلام:</strong>
+                        <p id="viewDocDate" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <strong>ملاحظات:</strong>
+                        <p id="viewDocNotes" class="mb-0"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-success" onclick="downloadDocument()">
+                    <i class="bi bi-download me-2"></i>
+                    تحميل الملف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentDocumentId = null;
+
+        function showAlert(message, type = 'success') {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const icon = type === 'error' ? 'bi-exclamation-triangle' : 'bi-check-circle';
+
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                    <i class="${icon} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>`;
+
+            const container = document.querySelector('.container-fluid');
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+
+            setTimeout(() => {
+                const alert = container.querySelector('.alert');
+                if (alert) alert.remove();
+            }, 3000);
         }
-    }
-</script>
+
+        async function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            const searchType = document.getElementById('searchType').value;
+            const status = document.getElementById('statusFilter').value;
+            const faxType = document.getElementById('faxTypeFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+
+            try {
+                const tableBody = document.querySelector('#searchResultsTable tbody');
+                tableBody.innerHTML = '<tr><td colspan="10" class="text-center p-4"><i class="bi bi-hourglass-split fa-spin me-2"></i>جاري البحث...</td></tr>';
+
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                const response = await fetch('/Home/Search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'RequestVerificationToken': token
+                    },
+                    body: new URLSearchParams({
+                        searchTerm: searchTerm || '',
+                        searchType: searchType || 'all',
+                        status: status || '',
+                        faxType: faxType || '',
+                        dateFilter: dateFilter || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('Search result:', result);
+
+                if (result.success && result.data) {
+                    updateSearchResults(result.data);
+                    showAlert(result.message || `تم العثور على ${result.data.length} نتيجة`);
+                } else {
+                    tableBody.innerHTML = '<tr><td colspan="10" class="text-center p-4 text-muted">لا توجد نتائج مطابقة للبحث</td></tr>';
+                    document.getElementById('resultsCount').textContent = '0 نتيجة';
+                    showAlert(result.message || 'لم يتم العثور على نتائج مطابقة', 'error');
+                }
+            } catch (error) {
+                console.error('Error performing search:', error);
+                const tableBody = document.querySelector('#searchResultsTable tbody');
+                tableBody.innerHTML = '<tr><td colspan="10" class="text-center p-4 text-danger">حدث خطأ في البحث</td></tr>';
+                showAlert(`حدث خطأ في البحث: ${error.message}`, 'error');
+            }
+        }
+
+        function updateSearchResults(documents) {
+            const tableBody = document.querySelector('#searchResultsTable tbody');
+            document.getElementById('resultsCount').textContent = `${documents.length} نتيجة`;
+            
+            if (!documents || documents.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="10" class="text-center p-4 text-muted">لا توجد نتائج</td></tr>';
+                return;
+            }
+
+            let html = '';
+            documents.forEach((doc, index) => {
+                const statusClass = doc.status === 'sent' ? 'bg-success' : doc.status === 'received' ? 'bg-primary' : 'bg-secondary';
+                const statusText = doc.status === 'sent' ? 'صادر' : doc.status === 'received' ? 'وارد' : doc.status || 'غير محدد';
+                
+                const typeClass = getTypeClass(doc.faxType);
+                const typeText = getTypeText(doc.faxType);
+                
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            ${doc.faxNumber ? `<span class="badge bg-info">${doc.faxNumber}</span>` : '<span class="text-muted">غير محدد</span>'}
+                        </td>
+                        <td>
+                            <small>${new Date(doc.dateCreated).toLocaleDateString('ar-EG')}</small>
+                            <br>
+                            <small class="text-muted">${new Date(doc.dateCreated).toLocaleTimeString('ar-EG', {hour: '2-digit', minute: '2-digit'})}</small>
+                        </td>
+                        <td>
+                            <strong>${doc.name}</strong>
+                            ${doc.notes ? `<br><small class="text-muted">${doc.notes}</small>` : ''}
+                        </td>
+                        <td>${doc.sender || ''}</td>
+                        <td>${doc.recipient || ''}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            ${doc.faxType ? `<span class="badge ${typeClass}">${typeText}</span>` : '<span class="text-muted">غير محدد</span>'}
+                        </td>
+                        <td>
+                            ${doc.numberOfPages > 0 ? `<span class="badge bg-secondary">${doc.numberOfPages} صفحة</span>` : '<span class="text-muted">غير محدد</span>'}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-info" onclick="viewDocument(${doc.id})" title="عرض">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="downloadDocument(${doc.id})" title="تحميل">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <a href="/Home/Management" class="btn btn-outline-warning" title="تعديل">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        }
+
+        function getTypeClass(type) {
+            const types = {
+                'planning_training_operations': 'bg-primary',
+                'needs_technical_affairs': 'bg-secondary',
+                'intelligence_modern_systems': 'bg-success',
+                'systems_research': 'bg-warning',
+                'command_control_mechanisms': 'bg-danger',
+                'organization_management': 'bg-info',
+                'military_secretariat': 'bg-dark',
+                'officer_affairs': 'bg-light text-dark',
+                'information_warfare': 'bg-primary',
+                'development_technical_security': 'bg-secondary'
+            };
+            return types[type] || 'bg-secondary';
+        }
+
+        function getTypeText(type) {
+            const types = {
+                'planning_training_operations': 'إتجاه التخطيط والتدريب والعمليات',
+                'needs_technical_affairs': 'إتجاه الإحتياجات والشئون الفنية',
+                'intelligence_modern_systems': 'إتجاه الذكاء والأنظمة الحديثة',
+                'systems_research': 'إتجاه النظم والبحوث',
+                'command_control_mechanisms': 'إتجاه ألية القيادة والسيطرة',
+                'organization_management': 'فرع التنظيم والإدارة',
+                'military_secretariat': 'فرع السكرتارية العسكرية',
+                'officer_affairs': 'فرع شئون ضباط',
+                'information_warfare': 'فرع حرب المعلومات',
+                'development_technical_security': 'إتجاه التطوير والتأمين الفني'
+            };
+            return types[type] || type;
+        }
+
+        function quickSearch(type) {
+            // Clear previous search
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchType').value = 'all';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('faxTypeFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+
+            switch(type) {
+                case 'today':
+                    document.getElementById('dateFilter').value = 'today';
+                    break;
+                case 'week':
+                    document.getElementById('dateFilter').value = 'week';
+                    break;
+                case 'month':
+                    document.getElementById('dateFilter').value = 'month';
+                    break;
+                case 'sent':
+                    document.getElementById('statusFilter').value = 'sent';
+                    break;
+                case 'received':
+                    document.getElementById('statusFilter').value = 'received';
+                    break;
+                case 'all':
+                    // Keep all filters empty for all results
+                    break;
+            }
+            
+            performSearch();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchType').value = 'all';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('faxTypeFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            
+            const tableBody = document.querySelector('#searchResultsTable tbody');
+            tableBody.innerHTML = '<tr><td colspan="10" class="text-center p-4 text-muted"><i class="bi bi-search me-2"></i>قم بإجراء بحث للحصول على النتائج</td></tr>';
+            document.getElementById('resultsCount').textContent = '0 نتيجة';
+            
+            showAlert('تم مسح نموذج البحث');
+        }
+
+        async function viewDocument(id) {
+            currentDocumentId = id;
+            try {
+                const response = await fetch(`/Home/GetDocument?id=${id}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    document.getElementById('viewDocName').textContent = data.name || 'غير محدد';
+                    document.getElementById('viewDocNumber').textContent = data.faxNumber || 'غير محدد';
+                    document.getElementById('viewDocSender').textContent = data.sender || 'غير محدد';
+                    document.getElementById('viewDocRecipient').textContent = data.recipient || 'غير محدد';
+                    document.getElementById('viewDocStatus').innerHTML = `<span class="badge ${data.status === 'sent' ? 'bg-success' : 'bg-primary'}">${data.status === 'sent' ? 'صادر' : 'وارد'}</span>`;
+                    document.getElementById('viewDocType').innerHTML = `<span class="badge ${getTypeClass(data.faxType)}">${getTypeText(data.faxType)}</span>`;
+                    document.getElementById('viewDocPages').textContent = `${data.numberOfPages || 1} صفحة`;
+                    document.getElementById('viewDocDate').textContent = new Date(data.dateCreated).toLocaleDateString('ar-EG') || 'غير محدد';
+                    document.getElementById('viewDocNotes').textContent = data.notes || 'لا توجد ملاحظات';
+                    
+                    $('#viewDocumentModal').modal('show');
+                } else {
+                    showAlert(result.message || 'لم يتم العثور على الوثيقة', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading document details:', error);
+                showAlert('حدث خطأ في تحميل تفاصيل الوثيقة', 'error');
+            }
+        }
+
+        function downloadDocument(id) {
+            const documentId = id || currentDocumentId;
+            
+            if (!documentId) {
+                showAlert('لم يتم تحديد الوثيقة للتحميل', 'error');
+                return;
+            }
+
+            // Create download link and trigger download
+            try {
+                const downloadUrl = `/Home/DownloadDocument?id=${documentId}`;
+                
+                // Show downloading message
+                showAlert('جاري تحميل الملف...', 'info');
+                
+                // Create temporary link element
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = ''; // Let the browser determine the filename from headers
+                link.style.display = 'none';
+                
+                // Add error handling for the download
+                link.onerror = function() {
+                    showAlert('حدث خطأ في تحميل الملف', 'error');
+                };
+                
+                // Add to DOM, click, and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Give feedback after short delay
+                setTimeout(() => {
+                    showAlert('تم بدء تحميل الملف بنجاح');
+                }, 500);
+            } catch (error) {
+                console.error('Error downloading document:', error);
+                showAlert('حدث خطأ في تحميل الملف', 'error');
+            }
+        }
+
+        // Enable search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Auto-search when typing (with debounce)
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.trim().length > 2 || this.value.trim().length === 0) {
+                    performSearch();
+                }
+            }, 500);
+        });
+    </script>
+}

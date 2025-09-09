@@ -10,7 +10,7 @@ namespace CQCDMS.Services
         Task<ServiceResult<Document>> CreateDocumentAsync(Document document, IFormFile? file);
         Task<ServiceResult<Document>> UpdateDocumentAsync(Document document, IFormFile? file);
         Task<ServiceResult<bool>> DeleteDocumentAsync(int id);
-        Task<ServiceResult<IEnumerable<Document>>> SearchDocumentsAsync(string searchTerm, string searchType, string status, string faxType);
+        Task<ServiceResult<IEnumerable<Document>>> SearchDocumentsAsync(string searchTerm, string searchType, string status, string faxType, string? dateFilter = null);
         Task<ServiceResult<DocumentStatistics>> GetStatisticsAsync();
         Task<ServiceResult<byte[]>> DownloadDocumentAsync(int id);
     }

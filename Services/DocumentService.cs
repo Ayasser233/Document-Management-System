@@ -260,7 +260,7 @@ namespace CQCDMS.Services
             }
         }
 
-        public async Task<ServiceResult<IEnumerable<Document>>> SearchDocumentsAsync(string searchTerm, string searchType, string status, string faxType)
+        public async Task<ServiceResult<IEnumerable<Document>>> SearchDocumentsAsync(string searchTerm, string searchType, string status, string faxType, string? dateFilter = null)
         {
             try
             {

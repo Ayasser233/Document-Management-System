@@ -13,70 +13,16 @@
                     <i class="bi bi-gear-fill me-3"></i>
                     إدارة الفاكسات
                 </h2>
-                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
-                    data-bs-target="#addFaxModal">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    إضافة فاكس جديد
-                </button>
-            </div>
-        </div>
-    </div>
-    <!-- Search and Filter Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-funnel me-2"></i>
-                        البحث والفلترة
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="searchInput" class="form-label">البحث</label>
-                            <input type="text" class="form-control" id="searchInput" placeholder="ابحث عن فاكس...">
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="statusFilter" class="form-label">الحالة</label>
-                            <select class="form-select" id="statusFilter">
-                                <option value="">جميع الحالات</option>
-                                <option value="sent">صادر</option>
-                                <option value="received">وارد</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label for="faxTypeFilter" class="form-label">نوع الفاكس</label>
-                            <select class="form-select" id="faxTypeFilter">
-                                <option value="">جميع الأنواع</option>
-                                <option value="official">رسمي</option>
-                                <option value="administrative">إداري</option>
-                                <option value="financial">مالي</option>
-                                <option value="legal">قانوني</option>
-                                <option value="medical">طبي</option>
-                                <option value="educational">تعليمي</option>
-                                <option value="commercial">تجاري</option>
-                                <option value="personal">شخصي</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="dateFilter" class="form-label">فترة زمنية</label>
-                            <select class="form-select" id="dateFilter">
-                                <option value="">جميع التواريخ</option>
-                                <option value="today">اليوم</option>
-                                <option value="week">هذا الأسبوع</option>
-                                <option value="month">هذا الشهر</option>
-                                <option value="year">هذا العام</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 mb-3">
-                            <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-primary w-100" onclick="applyFilters()">
-                                <i class="bi bi-search me-2"></i>
-                                بحث
-                            </button>
-                        </div>
-                    </div>
+                <div class="d-flex gap-2">
+                    <a href="/Home/Search" class="btn btn-info">
+                        <i class="bi bi-search me-2"></i>
+                        البحث في الفاكسات
+                    </a>
+                    <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
+                        data-bs-target="#addFaxModal">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        إضافة فاكس جديد
+                    </button>
                 </div>
             </div>
         </div>
@@ -161,29 +107,35 @@
                                                 {
                                                     @switch (document.doc.FaxType?.ToLower())
                                                     {
-                                                        case "official":
-                                                            <span class="badge bg-primary">رسمي</span>
+                                                        case "planning_training_operations":
+                                                            <span class="badge bg-primary">إتجاه التخطيط والتدريب والعمليات</span>
                                                             break;
-                                                        case "administrative":
-                                                            <span class="badge bg-secondary">إداري</span>
+                                                        case "needs_technical_affairs":
+                                                            <span class="badge bg-secondary">إتجاه الإحتياجات والشئون الفنية</span>
                                                             break;
-                                                        case "financial":
-                                                            <span class="badge bg-success">مالي</span>
+                                                        case "intelligence_modern_systems":
+                                                            <span class="badge bg-success">إتجاه الذكاء والأنظمة الحديثة</span>
                                                             break;
-                                                        case "legal":
-                                                            <span class="badge bg-warning">قانوني</span>
+                                                        case "systems_research":
+                                                            <span class="badge bg-warning">إتجاه النظم والبحوث</span>
                                                             break;
-                                                        case "medical":
-                                                            <span class="badge bg-danger">طبي</span>
+                                                        case "command_control_mechanisms":
+                                                            <span class="badge bg-danger">إتجاه ألية القيادة والسيطرة</span>
                                                             break;
-                                                        case "educational":
-                                                            <span class="badge bg-info">تعليمي</span>
+                                                        case "organization_management":
+                                                            <span class="badge bg-info">فرع التنظيم والإدارة</span>
                                                             break;
-                                                        case "commercial":
-                                                            <span class="badge bg-dark">تجاري</span>
+                                                        case "military_secretariat":
+                                                            <span class="badge bg-dark">فرع السكرتارية العسكرية</span>
                                                             break;
-                                                        case "personal":
-                                                            <span class="badge bg-light text-dark">شخصي</span>
+                                                        case "officer_affairs":
+                                                            <span class="badge bg-light text-dark">فرع شئون ضباط</span>
+                                                            break;
+                                                        case "information_warfare":
+                                                            <span class="badge bg-primary">فرع حرب المعلومات</span>
+                                                            break;
+                                                        case "development_technical_security":
+                                                            <span class="badge bg-secondary">إتجاه التطوير والتأمين الفني</span>
                                                             break;
                                                         default:
                                                             <span class="badge bg-secondary">@document.doc.FaxType</span>
@@ -296,14 +248,16 @@
                             <label for="addFaxType" class="form-label">الفرع/الجهة</label>
                             <select class="form-select" id="addFaxType" name="FaxType">
                                 <option value="">اختر الفرع/الجهة</option>
-                                <option value="official">رسمي</option>
-                                <option value="administrative">إداري</option>
-                                <option value="financial">مالي</option>
-                                <option value="legal">قانوني</option>
-                                <option value="medical">طبي</option>
-                                <option value="educational">تعليمي</option>
-                                <option value="commercial">تجاري</option>
-                                <option value="personal">شخصي</option>
+                                <option value="planning_training_operations">إتجاه التخطيط والتدريب والعمليات</option>
+                                <option value="needs_technical_affairs">إتجاه الإحتياجات والشئون الفنية</option>
+                                <option value="intelligence_modern_systems">إتجاه الذكاء والأنظمة الحديثة</option>
+                                <option value="systems_research">إتجاه النظم والبحوث</option>
+                                <option value="command_control_mechanisms">إتجاه ألية القيادة والسيطرة</option>
+                                <option value="organization_management">فرع التنظيم والإدارة</option>
+                                <option value="military_secretariat">فرع السكرتارية العسكرية</option>
+                                <option value="officer_affairs">فرع شئون ضباط</option>
+                                <option value="information_warfare">فرع حرب المعلومات</option>
+                                <option value="development_technical_security">إتجاه التطوير والتأمين الفني</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -392,14 +346,16 @@
                             <label for="editFaxType" class="form-label">الفرع/الجهة</label>
                             <select class="form-select" id="editFaxType">
                                 <option value="">اختر الفرع/الجهة</option>
-                                <option value="official">رسمي</option>
-                                <option value="administrative">إداري</option>
-                                <option value="financial">مالي</option>
-                                <option value="legal">قانوني</option>
-                                <option value="medical">طبي</option>
-                                <option value="educational">تعليمي</option>
-                                <option value="commercial">تجاري</option>
-                                <option value="personal">شخصي</option>
+                                <option value="planning_training_operations">إتجاه التخطيط والتدريب والعمليات</option>
+                                <option value="needs_technical_affairs">إتجاه الإحتياجات والشئون الفنية</option>
+                                <option value="intelligence_modern_systems">إتجاه الذكاء والأنظمة الحديثة</option>
+                                <option value="systems_research">إتجاه النظم والبحوث</option>
+                                <option value="command_control_mechanisms">إتجاه ألية القيادة والسيطرة</option>
+                                <option value="organization_management">فرع التنظيم والإدارة</option>
+                                <option value="military_secretariat">فرع السكرتارية العسكرية</option>
+                                <option value="officer_affairs">فرع شئون ضباط</option>
+                                <option value="information_warfare">فرع حرب المعلومات</option>
+                                <option value="development_technical_security">إتجاه التطوير والتأمين الفني</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -499,6 +455,8 @@
 
 @section Scripts {
     <script>
+        let currentDocumentId = null;
+        
         // Loading and utility functions
         function showLoading() {
             const loadingHtml = '<div class="text-center p-3"><i class="bi bi-hourglass-split fa-spin"></i> جاري التحميل...</div>';
@@ -528,14 +486,16 @@
 
         function getFaxTypeDisplay(type) {
             const types = {
-                'official': { text: 'رسمي', class: 'bg-primary' },
-                'administrative': { text: 'إداري', class: 'bg-secondary' },
-                'financial': { text: 'مالي', class: 'bg-success' },
-                'legal': { text: 'قانوني', class: 'bg-warning' },
-                'medical': { text: 'طبي', class: 'bg-info' },
-                'educational': { text: 'تعليمي', class: 'bg-dark' },
-                'commercial': { text: 'تجاري', class: 'bg-primary' },
-                'personal': { text: 'شخصي', class: 'bg-light text-dark' }
+                'planning_training_operations': { text: 'إتجاه التخطيط والتدريب والعمليات', class: 'bg-primary' },
+                'needs_technical_affairs': { text: 'إتجاه الإحتياجات والشئون الفنية', class: 'bg-secondary' },
+                'intelligence_modern_systems': { text: 'إتجاه الذكاء والأنظمة الحديثة', class: 'bg-success' },
+                'systems_research': { text: 'إتجاه النظم والبحوث', class: 'bg-warning' },
+                'command_control_mechanisms': { text: 'إتجاه ألية القيادة والسيطرة', class: 'bg-danger' },
+                'organization_management': { text: 'فرع التنظيم والإدارة', class: 'bg-info' },
+                'military_secretariat': { text: 'فرع السكرتارية العسكرية', class: 'bg-dark' },
+                'officer_affairs': { text: 'فرع شئون ضباط', class: 'bg-light text-dark' },
+                'information_warfare': { text: 'فرع حرب المعلومات', class: 'bg-primary' },
+                'development_technical_security': { text: 'إتجاه التطوير والتأمين الفني', class: 'bg-secondary' }
             };
             return types[type] || { text: type, class: 'bg-secondary' };
         }
@@ -733,6 +693,7 @@
         }
 
         async function viewFax(id) {
+            currentDocumentId = id; // Store the current document ID
             try {
                 const response = await fetch(`/Home/GetDocument?id=${id}`);
                 const result = await response.json();
@@ -796,49 +757,43 @@
             }
         }
         function downloadFax(id) {
-            // For now, just show a message - file download would need additional implementation
-            showAlert('سيتم تنفيذ تحميل الملفات في التحديث القادم', 'info');
-        }
+            const documentId = id || currentDocumentId;
+            
+            if (!documentId) {
+                showAlert('لم يتم تحديد الفاكس للتحميل', 'error');
+                return;
+            }
 
-        async function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.trim();
-            const status = document.getElementById('statusFilter').value;
-            const dateFilter = document.getElementById('dateFilter').value;
-            const faxType = document.getElementById('faxTypeFilter') ? document.getElementById('faxTypeFilter').value : '';
-
+            // Create download link and trigger download
             try {
-                // Get anti-forgery token
-                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-                const response = await fetch('/Home/Search', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'RequestVerificationToken': token
-                    },
-                    body: new URLSearchParams({
-                        searchTerm: searchTerm,
-                        searchType: 'all',
-                        status: status,
-                        faxType: faxType
-                    })
-                });
-
-                if (response.ok) {
-                    showAlert('تم تطبيق الفلاتر بنجاح');
-                    setTimeout(() => {
-                        window.location.href = '/Home/Search?' + new URLSearchParams({
-                            searchTerm: searchTerm,
-                            status: status,
-                            faxType: faxType
-                        });
-                    }, 1000);
-                } else {
-                    showAlert('حدث خطأ في تطبيق الفلاتر', 'error');
-                }
+                const downloadUrl = `/Home/DownloadDocument?id=${documentId}`;
+                
+                // Show downloading message
+                showAlert('جاري تحميل الملف...', 'info');
+                
+                // Create temporary link element
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = ''; // Let the browser determine the filename from headers
+                link.style.display = 'none';
+                
+                // Add error handling for the download
+                link.onerror = function() {
+                    showAlert('حدث خطأ في تحميل الملف', 'error');
+                };
+                
+                // Add to DOM, click, and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Give feedback after short delay
+                setTimeout(() => {
+                    showAlert('تم بدء تحميل الملف بنجاح');
+                }, 500);
             } catch (error) {
-                console.error('Error applying filters:', error);
-                showAlert('حدث خطأ في الاتصال بالخادم', 'error');
+                console.error('Error downloading document:', error);
+                showAlert('حدث خطأ في تحميل الملف', 'error');
             }
         }
 
@@ -856,21 +811,6 @@
                 console.error('Error loading statistics:', error);
             }
         }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('keyup', function () {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#faxTable tbody tr');
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function () {
