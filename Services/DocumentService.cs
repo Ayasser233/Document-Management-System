@@ -147,7 +147,7 @@ namespace CQCDMS.Services
             }
         }
 
-        public async Task<ServiceResult<Document>> UpdateDocumentAsync(Document document, IFormFile? file)
+        public async Task<ServiceResult<Document>> UpdateDocumentAsync(Document document, IFormFile? file, bool removeFile = false)
         {
             try
             {
@@ -160,6 +160,19 @@ namespace CQCDMS.Services
                         Message = "الفاكس غير موجود"
                     };
                 }
+
+                // Audit: track changes
+                _logger.LogInformation("Updating fax {Id}. Original values => Name:{OldName}, Sender:{OldSender}, Recipient:{OldRecipient}, Status:{OldStatus}, FaxType:{OldFaxType}, Pages:{OldPages}, Important:{OldImp}, CommitmentDate:{OldCommit}, HasFile:{HasFile}",
+                    existingDocument.Id,
+                    existingDocument.Name,
+                    existingDocument.Sender,
+                    existingDocument.Recipient,
+                    existingDocument.Status,
+                    existingDocument.FaxType,
+                    existingDocument.NumberOfPages,
+                    existingDocument.IsImportant,
+                    existingDocument.CommitmentDate,
+                    string.IsNullOrEmpty(existingDocument.FilePath) ? "No" : "Yes");
 
                 // Handle new file upload
                 if (file != null && file.Length > 0)
@@ -185,7 +198,28 @@ namespace CQCDMS.Services
                     document.FileSize = fileResult.Data.FileSize;
                 }
 
-                var updatedDocument = await _repository.UpdateAsync(document);
+                // If removeFile requested and no new file uploaded
+                if (removeFile && (file == null || file.Length == 0) && !string.IsNullOrEmpty(existingDocument.FilePath))
+                {
+                    await DeleteFileAsync(existingDocument.FilePath);
+                    document.FilePath = null;
+                    document.FileUrl = null;
+                    document.FileSize = null;
+                }
+
+                var updatedDocument = await _repository.UpdateAsync(document, removeFile && (file == null || file.Length == 0));
+
+                _logger.LogInformation("Updated fax {Id}. New values => Name:{NewName}, Sender:{NewSender}, Recipient:{NewRecipient}, Status:{NewStatus}, FaxType:{NewFaxType}, Pages:{NewPages}, Important:{NewImp}, CommitmentDate:{NewCommit}, HasFile:{HasFile}",
+                    updatedDocument.Id,
+                    updatedDocument.Name,
+                    updatedDocument.Sender,
+                    updatedDocument.Recipient,
+                    updatedDocument.Status,
+                    updatedDocument.FaxType,
+                    updatedDocument.NumberOfPages,
+                    updatedDocument.IsImportant,
+                    updatedDocument.CommitmentDate,
+                    string.IsNullOrEmpty(updatedDocument.FilePath) ? "No" : "Yes");
                 return new ServiceResult<Document>
                 {
                     Success = true,
@@ -264,7 +298,35 @@ namespace CQCDMS.Services
         {
             try
             {
+                _logger.LogInformation("SearchDocumentsAsync called with: searchTerm='{SearchTerm}', searchType='{SearchType}', status='{Status}', faxType='{FaxType}', dateFilter='{DateFilter}'", 
+                    searchTerm, searchType, status, faxType, dateFilter);
+                    
                 var documents = await _repository.SearchAsync(searchTerm, searchType, status, faxType);
+
+                if (!string.IsNullOrWhiteSpace(dateFilter))
+                {
+                    var today = DateTime.Today;
+                    switch (dateFilter.ToLower())
+                    {
+                        case "today":
+                            documents = documents.Where(d => d.DateCreated.Date == today);
+                            break;
+                        case "week":
+                            // بداية الأسبوع: نفترض آخر 7 أيام لتفادي اختلافات تعريف الأسبوع
+                            var weekStart = today.AddDays(-6); // يشمل اليوم + ستة أيام سابقة
+                            documents = documents.Where(d => d.DateCreated.Date >= weekStart && d.DateCreated.Date <= today);
+                            break;
+                        case "month":
+                            documents = documents.Where(d => d.DateCreated.Year == today.Year && d.DateCreated.Month == today.Month);
+                            break;
+                        case "year":
+                            documents = documents.Where(d => d.DateCreated.Year == today.Year);
+                            break;
+                    }
+                }
+
+                // ترتيب تنازلي حسب التاريخ
+                documents = documents.OrderByDescending(d => d.DateCreated);
                 return new ServiceResult<IEnumerable<Document>>
                 {
                     Success = true,
@@ -320,7 +382,15 @@ namespace CQCDMS.Services
                     };
                 }
 
-                if (!File.Exists(document.FilePath))
+                // Resolve physical path (we now store relative uploads path). If FilePath is absolute keep it.
+                var storedPath = document.FilePath;
+                string physicalPath = storedPath!;
+                if (!Path.IsPathRooted(storedPath))
+                {
+                    physicalPath = Path.Combine(_environment.WebRootPath, storedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+                }
+
+                if (!File.Exists(physicalPath))
                 {
                     return new ServiceResult<byte[]>
                     {
@@ -329,7 +399,7 @@ namespace CQCDMS.Services
                     };
                 }
 
-                var fileBytes = await File.ReadAllBytesAsync(document.FilePath);
+                var fileBytes = await File.ReadAllBytesAsync(physicalPath);
                 return new ServiceResult<byte[]>
                 {
                     Success = true,
@@ -352,13 +422,22 @@ namespace CQCDMS.Services
         {
             try
             {
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "faxes");
-                Directory.CreateDirectory(uploadsFolder);
+                // Determine root for storage. Prefer WebRoot; when running published offline it still points inside the publish directory.
+                // Allow override using OFFLINE_STORAGE_ROOT (absolute) if set.
+                var overrideRoot = Environment.GetEnvironmentVariable("OFFLINE_STORAGE_ROOT");
+                string root = !string.IsNullOrWhiteSpace(overrideRoot) && Path.IsPathRooted(overrideRoot)
+                    ? overrideRoot
+                    : _environment.WebRootPath;
 
-                var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                var relativeFolder = Path.Combine("uploads", "faxes");
+                var physicalFolder = Path.Combine(root, relativeFolder);
+                Directory.CreateDirectory(physicalFolder);
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                var safeOriginalName = Path.GetFileName(file.FileName); // mitigate path traversal
+                var uniqueFileName = $"{Guid.NewGuid()}_{safeOriginalName}";
+                var physicalPath = Path.Combine(physicalFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(physicalPath, FileMode.Create))
                 {
                     await file.CopyToAsync(fileStream);
                 }
@@ -368,7 +447,8 @@ namespace CQCDMS.Services
                     Success = true,
                     Data = new FileInfo
                     {
-                        FilePath = filePath,
+                        // Persist relative path so published folder can relocate with whole tree
+                        FilePath = Path.Combine(relativeFolder, uniqueFileName).Replace('\\', '/'),
                         FileUrl = $"/uploads/faxes/{uniqueFileName}",
                         FileSize = file.Length
                     },

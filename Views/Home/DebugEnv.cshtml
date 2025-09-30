@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Environment Debug";
+}
+
+<div class="container mt-4">
+    <h2>Environment Debug</h2>
+    
+    <div class="alert alert-info">
+        <h4>Environment Variables:</h4>
+        <ul>
+            <li><strong>OFFLINE_ASSETS:</strong> "@Environment.GetEnvironmentVariable("OFFLINE_ASSETS")"</li>
+            <li><strong>Is Null/Empty:</strong> @(string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("OFFLINE_ASSETS")))</li>
+            <li><strong>Equals "true":</strong> @(Environment.GetEnvironmentVariable("OFFLINE_ASSETS")?.Equals("true", StringComparison.OrdinalIgnoreCase))</li>
+        </ul>
+    </div>
+    
+    <div class="alert alert-warning">
+        <h4>Current Condition Result:</h4>
+        @{
+            var offline = Environment.GetEnvironmentVariable("OFFLINE_ASSETS");
+            var shouldUseOffline = !string.IsNullOrWhiteSpace(offline) && offline.Equals("true", StringComparison.OrdinalIgnoreCase);
+        }
+        <p><strong>Should use offline assets:</strong> @shouldUseOffline</p>
+    </div>
+    
+    <div class="alert alert-secondary">
+        <h4>CSS Links Being Used:</h4>
+        @if (shouldUseOffline)
+        {
+            <p>✅ Using LOCAL assets:</p>
+            <ul>
+                <li>~/lib/local/bootstrap-icons.css</li>
+                <li>~/lib/local/cairo.css</li>
+            </ul>
+        }
+        else
+        {
+            <p>🌐 Using CDN assets:</p>  
+            <ul>
+                <li>https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css</li>
+                <li>https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap</li>
+            </ul>
+        }
+    </div>
+    
+    <div class="alert alert-success">
+        <h4>How to set environment variable:</h4>
+        <p><strong>PowerShell:</strong></p>
+        <code>$env:OFFLINE_ASSETS = "true"</code><br>
+        <code>dotnet run</code>
+        
+        <p class="mt-2"><strong>Command Prompt:</strong></p>
+        <code>set OFFLINE_ASSETS=true</code><br>
+        <code>dotnet run</code>
+    </div>
+</div>

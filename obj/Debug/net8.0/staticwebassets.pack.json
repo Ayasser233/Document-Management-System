@@ -549,6 +549,10 @@
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map.gz"
     },
     {
+      "Id": "D:\\CQCDMS\\wwwroot\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "PackagePath": "staticwebassets\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf"
+    },
+    {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.CQCDMS.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
       "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },

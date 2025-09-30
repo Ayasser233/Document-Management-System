@@ -7,7 +7,7 @@ namespace CQCDMS.Repositories
         Task<IEnumerable<Document>> GetAllAsync();
         Task<Document?> GetByIdAsync(int id);
         Task<Document> AddAsync(Document document);
-        Task<Document> UpdateAsync(Document document);
+    Task<Document> UpdateAsync(Document document, bool clearFile = false);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<Document>> SearchAsync(string searchTerm, string searchType, string status, string faxType);
         Task<DocumentStatistics> GetStatisticsAsync();

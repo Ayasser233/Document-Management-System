@@ -1,0 +1,529 @@
+@model IEnumerable<CQCDMS.Models.Document>?
+@{
+    ViewData["Title"] = "الالتزامات";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-primary">
+                    <i class="bi bi-calendar-event me-3"></i>
+                    الالتزامات والمواعيد المهمة
+                </h2>
+                <div class="d-flex gap-2">
+                    <a href="/Home/Management" class="btn btn-info">
+                        <i class="bi bi-gear me-2"></i>
+                        إدارة الفاكسات
+                    </a>
+                    <a href="/Home/Search" class="btn btn-outline-primary">
+                        <i class="bi bi-search me-2"></i>
+                        البحث في الفاكسات
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar3 me-2"></i>
+                        التقويم
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button type="button" class="btn btn-outline-primary" onclick="previousMonth()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <h4 id="currentMonthYear" class="mb-0"></h4>
+                        <button type="button" class="btn btn-outline-primary" onclick="nextMonth()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center" id="calendarTable">
+                            <thead>
+                                <tr class="table-dark">
+                                    <th>الأحد</th>
+                                    <th>الاثنين</th>
+                                    <th>الثلاثاء</th>
+                                    <th>الأربعاء</th>
+                                    <th>الخميس</th>
+                                    <th>الجمعة</th>
+                                    <th>السبت</th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendarBody">
+                                <!-- Calendar days will be generated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Documents List -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        الفاكسات المهمة
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group" id="importantDocsList">
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var document in Model.Where(d => d.IsImportant == true && d.CommitmentDate.HasValue && d.CommitmentDate.Value.Date >= DateTime.Today).OrderBy(d => d.CommitmentDate))
+                            {
+                                <div class="list-group-item list-group-item-action" onclick="highlightDate('@(document.CommitmentDate?.ToString("yyyy-MM-dd") ?? "")')">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@document.Name</h6>
+                                        <small>@(document.CommitmentDate?.ToString("dd/MM/yyyy") ?? document.DateCreated.ToString("dd/MM/yyyy"))</small>
+                                    </div>
+                                    <p class="mb-1">@document.Sender → @document.Recipient</p>
+                                    <small class="text-muted">@document.Notes</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted p-3">
+                                <i class="bi bi-inbox fs-1 mb-3"></i>
+                                <p>لا توجد فاكسات مهمة</p>
+                                <small>يمكنك إضافة فاكسات مهمة من صفحة إدارة الفاكسات</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Important Documents -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        مهام اليوم
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var todayDocs = Model?.Where(d => d.IsImportant == true && d.CommitmentDate.HasValue && d.CommitmentDate.Value.Date == DateTime.Today);
+                    }
+                    @if (todayDocs != null && todayDocs.Any())
+                    {
+                        <div class="row">
+                            @foreach (var doc in todayDocs)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card border-danger">
+                                        <div class="card-body">
+                                            <h6 class="card-title text-danger">@doc.Name</h6>
+                                            <p class="card-text">
+                                                <strong>من:</strong> @doc.Sender<br>
+                                                <strong>إلى:</strong> @doc.Recipient
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(doc.Notes))
+                                            {
+                                                <p class="card-text"><small class="text-muted">@doc.Notes</small></p>
+                                            }
+                                            <button class="btn btn-sm btn-outline-primary" onclick="viewFax(@doc.Id)">
+                                                <i class="bi bi-eye me-1"></i>
+                                                عرض التفاصيل
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted p-4">
+                            <i class="bi bi-calendar-check fs-1 mb-3"></i>
+                            <p>لا توجد مهام مهمة لليوم</p>
+                            <small>استمتع بيومك!</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Fax Details Modal -->
+<div class="modal fade" id="viewFaxDetailsModal" tabindex="-1" aria-labelledby="viewFaxDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="viewFaxDetailsModalLabel">
+                    <i class="bi bi-eye me-2"></i>
+                    تفاصيل الفاكس
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>اسم الموضوع:</strong>
+                        <p id="modalFaxName" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>رقم الفاكس:</strong>
+                        <p id="modalFaxNumber" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>الصادر:</strong>
+                        <p id="modalSender" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>الوارد:</strong>
+                        <p id="modalRecipient" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>الحالة:</strong>
+                        <p id="modalStatus" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>نوع الفاكس:</strong>
+                        <p id="modalFaxType" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>عدد الصفحات:</strong>
+                        <p id="modalPages" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>تاريخ الالتزام:</strong>
+                        <p id="modalCommitmentDate" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <strong>ملاحظات:</strong>
+                        <p id="modalNotes" class="mb-0"></p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>تاريخ الإنشاء:</strong>
+                        <p id="modalDateCreated" class="mb-0"></p>
+                    </div>
+                    <div class="col-md-6 mb-3" id="modalFileSection" style="display:none;">
+                        <strong>الملف المرفق:</strong>
+                        <p id="modalFileInfo" class="mb-0"></p>
+                        <a id="modalFileLink" href="#" class="btn btn-sm btn-outline-primary mt-1" target="_blank">
+                            <i class="bi bi-download me-1"></i>
+                            تحميل الملف
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <a id="modalEditLink" href="#" class="btn btn-warning">
+                    <i class="bi bi-pencil me-1"></i>
+                    تعديل الفاكس
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentDate = new Date();
+        let importantDates = [];
+
+        // Initialize calendar when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load important dates from the model
+            @if (Model != null && Model.Any())
+            {
+                <text>
+                importantDates = [
+                    @foreach (var doc in Model.Where(d => d.IsImportant == true && d.CommitmentDate.HasValue && d.CommitmentDate.Value.Date >= DateTime.Today))
+                    {
+                        <text>
+                        {
+                            date: '@(doc.CommitmentDate?.ToString("yyyy-MM-dd") ?? "")',
+                            title: '@Html.Raw(doc.Name?.Replace("'", "\\'"))',
+                            sender: '@Html.Raw(doc.Sender?.Replace("'", "\\'"))',
+                            notes: '@Html.Raw(doc.Notes?.Replace("'", "\\'"))'
+                        },
+                        </text>
+                    }
+                ];
+                </text>
+            }
+
+            generateCalendar();
+        });
+
+        function generateCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // Update month/year header
+            const monthNames = [
+                'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+                'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+            ];
+            document.getElementById('currentMonthYear').textContent = monthNames[month] + ' ' + year;
+
+            // Get first day of month and number of days
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const numDays = lastDay.getDate();
+            const startDay = firstDay.getDay(); // 0 = Sunday
+
+            // Clear calendar body
+            const calendarBody = document.getElementById('calendarBody');
+            calendarBody.innerHTML = '';
+
+            let date = 1;
+            
+            // Create calendar rows
+            for (let week = 0; week < 6; week++) {
+                const row = document.createElement('tr');
+                
+                // Create calendar cells for each day of the week
+                for (let day = 0; day < 7; day++) {
+                    const cell = document.createElement('td');
+                    cell.style.height = '80px';
+                    cell.style.verticalAlign = 'top';
+                    cell.style.position = 'relative';
+                    
+                    if (week === 0 && day < startDay) {
+                        // Empty cells before month starts
+                        cell.innerHTML = '';
+                        cell.classList.add('text-muted');
+                    } else if (date > numDays) {
+                        // Empty cells after month ends
+                        cell.innerHTML = '';
+                        cell.classList.add('text-muted');
+                    } else {
+                        // Regular calendar day
+                        cell.innerHTML = `<div class="fw-bold">${date}</div>`;
+                        
+                        // Check if this date has important documents
+                        const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        const dayImportantDocs = importantDates.filter(item => item.date === currentDateStr);
+                        
+                        if (dayImportantDocs.length > 0) {
+                            cell.classList.add('bg-warning', 'bg-opacity-25');
+                            let tooltip = 'مهام مهمة:\n';
+                            dayImportantDocs.forEach(doc => {
+                                tooltip += `• ${doc.title}\n`;
+                                cell.innerHTML += `<div class="small text-danger">• ${doc.title.substring(0, 15)}${doc.title.length > 15 ? '...' : ''}</div>`;
+                            });
+                            cell.title = tooltip;
+                        }
+                        
+                        // Highlight today
+                        const today = new Date();
+                        if (year === today.getFullYear() && month === today.getMonth() && date === today.getDate()) {
+                            cell.classList.add('bg-primary', 'text-white');
+                        }
+                        
+                        // Make cell clickable
+                        cell.style.cursor = 'pointer';
+                        cell.onclick = function() {
+                            if (dayImportantDocs.length > 0) {
+                                showDayDetails(currentDateStr, dayImportantDocs);
+                            }
+                        };
+                        
+                        date++;
+                    }
+                    
+                    row.appendChild(cell);
+                }
+                
+                calendarBody.appendChild(row);
+                
+                // Break if we've filled all days
+                if (date > numDays) {
+                    break;
+                }
+            }
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            generateCalendar();
+        }
+
+        function highlightDate(dateStr) {
+            // Remove previous highlights
+            document.querySelectorAll('.calendar-highlight').forEach(cell => {
+                cell.classList.remove('calendar-highlight', 'bg-info');
+            });
+
+            // Parse the date and navigate to that month if needed
+            const targetDate = new Date(dateStr);
+            if (targetDate.getFullYear() !== currentDate.getFullYear() || 
+                targetDate.getMonth() !== currentDate.getMonth()) {
+                currentDate = targetDate;
+                generateCalendar();
+            }
+
+            // Highlight the specific date
+            setTimeout(() => {
+                const day = targetDate.getDate();
+                const cells = document.querySelectorAll('#calendarBody td');
+                cells.forEach(cell => {
+                    if (cell.textContent.includes(day.toString()) && !cell.classList.contains('text-muted')) {
+                        cell.classList.add('calendar-highlight', 'bg-info', 'text-white');
+                    }
+                });
+            }, 100);
+        }
+
+        function showDayDetails(dateStr, docs) {
+            let details = `تفاصيل مهام يوم ${dateStr}:\n\n`;
+            docs.forEach((doc, index) => {
+                details += `${index + 1}. ${doc.title}\n`;
+                details += `   من: ${doc.sender}\n`;
+                if (doc.notes) {
+                    details += `   ملاحظات: ${doc.notes}\n`;
+                }
+                details += '\n';
+            });
+            alert(details);
+        }
+
+        async function viewFax(id) {
+            try {
+                console.log('Viewing fax with ID:', id);
+                
+                const response = await fetch(`/Home/GetDocument?id=${id}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('API Response:', result);
+
+                if (result.success && result.data) {
+                    const data = result.data;
+                    console.log('Document data:', data);
+                    
+                    // Helper functions for display
+                    const getFaxTypeDisplay = (type) => {
+                        const types = {
+                            'planning_training_operations': { text: 'إتجاه التخطيط والتدريب والعمليات', class: 'bg-primary' },
+                            'needs_technical_affairs': { text: 'إتجاه الإحتياجات والشئون الفنية', class: 'bg-success' },
+                            'intelligence_modern_systems': { text: 'إتجاه الذكاء والأنظمة الحديثة', class: 'bg-info' },
+                            'systems_research': { text: 'إتجاه النظم والبحوث', class: 'bg-warning' },
+                            'command_control_mechanisms': { text: 'إتجاه ألية القيادة والسيطرة', class: 'bg-danger' },
+                            'organization_management': { text: 'فرع التنظيم والإدارة', class: 'bg-secondary' },
+                            'military_secretariat': { text: 'فرع السكرتارية العسكرية', class: 'bg-dark' },
+                            'officer_affairs': { text: 'فرع شئون ضباط', class: 'bg-primary' },
+                            'information_warfare': { text: 'فرع حرب المعلومات', class: 'bg-danger' },
+                            'development_technical_security': { text: 'إتجاه التطوير والتأمين الفني', class: 'bg-success' }
+                        };
+                        return types[type] || { text: type || 'غير محدد', class: 'bg-secondary' };
+                    };
+
+                    const getStatusDisplay = (status) => {
+                        return status === 'sent' ? 
+                            { text: 'صادر', class: 'bg-success' } : 
+                            { text: 'وارد', class: 'bg-info' };
+                    };
+                    
+                    const faxType = getFaxTypeDisplay(data.faxType);
+                    const status = getStatusDisplay(data.status);
+
+                    // Populate modal fields
+                    document.getElementById('modalFaxName').textContent = data.name || 'غير محدد';
+                    document.getElementById('modalFaxNumber').textContent = data.faxNumber || 'غير محدد';
+                    document.getElementById('modalSender').textContent = data.sender || 'غير محدد';
+                    document.getElementById('modalRecipient').textContent = data.recipient || 'غير محدد';
+                    document.getElementById('modalStatus').innerHTML = `<span class="badge ${status.class}">${status.text}</span>`;
+                    document.getElementById('modalFaxType').innerHTML = `<span class="badge ${faxType.class}">${faxType.text}</span>`;
+                    document.getElementById('modalPages').textContent = `${data.numberOfPages || 1} صفحة`;
+                    document.getElementById('modalNotes').textContent = data.notes || 'لا توجد ملاحظات';
+                    document.getElementById('modalDateCreated').textContent = data.uploadDate || 'غير محدد';
+                    
+                    // Handle commitment date (for important faxes)
+                    const commitmentDate = data.commitmentDate || data.dateCreated;
+                    document.getElementById('modalCommitmentDate').textContent = commitmentDate || 'غير محدد';
+                    
+                    // Handle file section
+                    const fileSection = document.getElementById('modalFileSection');
+                    const fileInfo = document.getElementById('modalFileInfo');
+                    const fileLink = document.getElementById('modalFileLink');
+                    
+                    if (data.fileUrl) {
+                        fileSection.style.display = 'block';
+                        const fileName = data.fileUrl.split('/').pop();
+                        const sizeText = data.fileSize ? ` (${(data.fileSize / 1024).toFixed(1)} KB)` : '';
+                        fileInfo.textContent = fileName + sizeText;
+                        fileLink.href = `/Home/DownloadDocument?id=${id}`;
+                    } else {
+                        fileSection.style.display = 'none';
+                    }
+                    
+                    // Set edit link
+                    document.getElementById('modalEditLink').href = `/Home/Management#edit-${id}`;
+                    
+                    // Show modal
+                    const modal = new bootstrap.Modal(document.getElementById('viewFaxDetailsModal'));
+                    modal.show();
+                } else {
+                    console.error('API returned error:', result);
+                    showAlert(result.message || 'لم يتم العثور على الفاكس', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading fax details:', error);
+                showAlert('حدث خطأ في تحميل تفاصيل الفاكس: ' + (error.message || 'خطأ غير محدد'), 'error');
+            }
+        }
+        
+        function showAlert(message, type = 'success') {
+            const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', alertHtml);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                const alert = document.querySelector('.alert');
+                if (alert) {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    </script>
+}

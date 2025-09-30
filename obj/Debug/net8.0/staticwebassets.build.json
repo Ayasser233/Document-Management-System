@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "N+cSd64FY4nFs8il7ALMiMm0wiQcrjBI7mZBtjFcpJ8=",
+  "Hash": "2xrzmhJjN57pBC0w4l3PW2BS6FbyZ1FMBSNclYGVlN4=",
   "Source": "CQCDMS",
   "BasePath": "_content/CQCDMS",
   "Mode": "Default",
@@ -2913,6 +2913,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\lib\\bootstrap\\LICENSE"
+    },
+    {
+      "Identity": "D:\\CQCDMS\\wwwroot\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "SourceId": "CQCDMS",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\CQCDMS\\wwwroot\\",
+      "BasePath": "_content/CQCDMS",
+      "RelativePath": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume#[.{fingerprint}]?.pdf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "1bdur9kp92",
+      "Integrity": "3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf"
     }
   ],
   "Endpoints": [
@@ -26021,6 +26042,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-ZH6pA6BSx6fuHZvdaKph1DwUJ+VSYilIiEQu8ilnvqk="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.1bdur9kp92.pdf",
+      "AssetFile": "D:\\CQCDMS\\wwwroot\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "149255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 15 Sep 2025 18:04:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "1bdur9kp92"
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "AssetFile": "D:\\CQCDMS\\wwwroot\\uploads\\faxes\\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "149255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 15 Sep 2025 18:04:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw="
         }
       ]
     }

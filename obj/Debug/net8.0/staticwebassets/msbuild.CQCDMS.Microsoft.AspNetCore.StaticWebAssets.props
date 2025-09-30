@@ -2466,5 +2466,23 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\bootstrap\LICENSE'))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\faxes\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf'))">
+      <SourceType>Package</SourceType>
+      <SourceId>CQCDMS</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/CQCDMS</BasePath>
+      <RelativePath>uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <Fingerprint>1bdur9kp92</Fingerprint>
+      <Integrity>3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=</Integrity>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\uploads\faxes\e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf'))</OriginalItemSpec>
+    </StaticWebAsset>
   </ItemGroup>
 </Project>

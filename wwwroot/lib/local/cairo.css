@@ -1,0 +1,7 @@
+/* Local Cairo font fallback (subset) */
+@font-face { font-family: 'Cairo'; font-style: normal; font-weight:300; src: local('Cairo'); }
+@font-face { font-family: 'Cairo'; font-style: normal; font-weight:400; src: local('Cairo'); }
+@font-face { font-family: 'Cairo'; font-style: normal; font-weight:500; src: local('Cairo'); }
+@font-face { font-family: 'Cairo'; font-style: normal; font-weight:600; src: local('Cairo'); }
+@font-face { font-family: 'Cairo'; font-style: normal; font-weight:700; src: local('Cairo'); }
+body { font-family:'Cairo', system-ui, sans-serif; }

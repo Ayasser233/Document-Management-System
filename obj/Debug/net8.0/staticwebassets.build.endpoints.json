@@ -23027,6 +23027,88 @@
           "Value": "lib/bootstrap/dist/js/bootstrap.js.gz"
         }
       ]
+    },
+    {
+      "Route": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.1bdur9kp92.pdf",
+      "AssetFile": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "149255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 15 Sep 2025 18:04:11 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "1bdur9kp92"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "AssetFile": "uploads/faxes/e1bffff8-c862-4553-9404-8c83cd0375c5_Ahmed_Yasser_Resume.pdf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "149255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/pdf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Mon, 15 Sep 2025 18:04:11 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-3d2ruKwA9WoxC0QrKfxN9Nlb4tsOgW4Bed3uf+HGtDw="
+        }
+      ]
     }
   ]
 }

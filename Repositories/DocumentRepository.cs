@@ -35,7 +35,7 @@ namespace CQCDMS.Repositories
             return document;
         }
 
-        public async Task<Document> UpdateAsync(Document document)
+        public async Task<Document> UpdateAsync(Document document, bool clearFile = false)
         {
             var existingDocument = await _context.Documents.FindAsync(document.Id) ?? throw new ArgumentException("Document not found");
 
@@ -48,9 +48,17 @@ namespace CQCDMS.Repositories
             existingDocument.FaxType = document.FaxType;
             existingDocument.NumberOfPages = document.NumberOfPages;
             existingDocument.Notes = document.Notes;
+            existingDocument.IsImportant = document.IsImportant;
+            existingDocument.CommitmentDate = document.CommitmentDate;
 
             // Update file info if provided
-            if (!string.IsNullOrEmpty(document.FilePath))
+            if (clearFile)
+            {
+                existingDocument.FilePath = null;
+                existingDocument.FileUrl = null;
+                existingDocument.FileSize = null;
+            }
+            else if (!string.IsNullOrEmpty(document.FilePath))
             {
                 existingDocument.FilePath = document.FilePath;
                 existingDocument.FileUrl = document.FileUrl;
@@ -77,33 +85,47 @@ namespace CQCDMS.Repositories
         {
             var query = _context.Documents.AsQueryable();
 
+            _logger.LogInformation("Repository SearchAsync called with: searchTerm='{SearchTerm}', searchType='{SearchType}', status='{Status}', faxType='{FaxType}'", 
+                searchTerm, searchType, status, faxType);
+
             // Apply search filters
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 switch (searchType)
                 {
                     case "name":
-                        query = query.Where(d => d.Name!.Contains(searchTerm));
+                        _logger.LogInformation("Searching in Name field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.Name != null && d.Name.Contains(searchTerm));
                         break;
                     case "sender":
-                        query = query.Where(d => d.Sender!.Contains(searchTerm));
+                        _logger.LogInformation("Searching in Sender field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.Sender != null && d.Sender.Contains(searchTerm));
                         break;
                     case "recipient":
-                        query = query.Where(d => d.Recipient!.Contains(searchTerm));
+                        _logger.LogInformation("Searching in Recipient field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.Recipient != null && d.Recipient.Contains(searchTerm));
                         break;
                     case "faxnumber":
-                        query = query.Where(d => d.FaxNumber!.Contains(searchTerm));
+                        _logger.LogInformation("Searching in FaxNumber field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.FaxNumber != null && d.FaxNumber.Contains(searchTerm));
                         break;
                     case "faxtype":
-                        query = query.Where(d => d.FaxType!.Contains(searchTerm));
+                        _logger.LogInformation("Searching in FaxType field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.FaxType != null && d.FaxType.Contains(searchTerm));
+                        break;
+                    case "notes":
+                        _logger.LogInformation("Searching in Notes field for term: {SearchTerm}", searchTerm);
+                        query = query.Where(d => d.Notes != null && d.Notes.Contains(searchTerm));
                         break;
                     default: // "all"
+                        _logger.LogInformation("Searching in all fields for term: {SearchTerm}", searchTerm);
                         query = query.Where(d => 
-                            d.Name!.Contains(searchTerm) ||
-                            d.Sender!.Contains(searchTerm) ||
-                            d.Recipient!.Contains(searchTerm) ||
-                            d.FaxNumber!.Contains(searchTerm) ||
-                            d.FaxType!.Contains(searchTerm));
+                            (d.Name != null && d.Name.Contains(searchTerm)) ||
+                            (d.Sender != null && d.Sender.Contains(searchTerm)) ||
+                            (d.Recipient != null && d.Recipient.Contains(searchTerm)) ||
+                            (d.FaxNumber != null && d.FaxNumber.Contains(searchTerm)) ||
+                            (d.FaxType != null && d.FaxType.Contains(searchTerm)) ||
+                            (d.Notes != null && d.Notes.Contains(searchTerm)));
                         break;
                 }
             }

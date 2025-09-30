@@ -24,6 +24,10 @@ namespace CQCDMS.Models
         
         public string? Notes { get; set; }
         
+        public bool IsImportant { get; set; } = false; // For calendar commitments
+        
+        public DateTime? CommitmentDate { get; set; } // Date for calendar commitments
+        
         public string? FilePath { get; set; } // Add this for file URL/path
         
         public string? FileUrl { get; set; } // Add this for accessible file URL

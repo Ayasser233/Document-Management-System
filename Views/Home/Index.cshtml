@@ -81,28 +81,34 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">إدارة الفاكسات</h5>
-                        <p class="card-text">إدارة وأرشفة جميع الفاكسات الواردة والصادرة</p>
+                <a asp-controller="Home" asp-action="Management" class="text-decoration-none text-dark">
+                    <div class="card mb-4 h-100 shadow-sm hover-shadow transition-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title mb-2">إدارة الفاكسات</h5>
+                            <p class="card-text small text-muted">إدارة وأرشفة جميع الفاكسات الواردة والصادرة</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">البحث والاستعلام</h5>
-                        <p class="card-text">البحث السريع في أرشيف الفاكسات</p>
+                <a asp-controller="Home" asp-action="Search" class="text-decoration-none text-dark">
+                    <div class="card mb-4 h-100 shadow-sm hover-shadow transition-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title mb-2">البحث والاستعلام</h5>
+                            <p class="card-text small text-muted">البحث السريع في أرشيف الفاكسات</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">التقارير</h5>
-                        <p class="card-text">إنشاء تقارير مفصلة عن حركة الفاكسات</p>
+                <a asp-controller="Reports" asp-action="Index" class="text-decoration-none text-dark">
+                    <div class="card mb-4 h-100 shadow-sm hover-shadow transition-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title mb-2">التقارير</h5>
+                            <p class="card-text small text-muted">إنشاء تقارير مفصلة عن حركة الفاكسات</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>

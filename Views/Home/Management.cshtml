@@ -15,12 +15,12 @@
                 </h2>
                 <div class="d-flex gap-2">
                     <a href="/Home/Search" class="btn btn-info">
-                        <i class="bi bi-search me-2"></i>
+                        <i class="bi-search me-2"></i>
                         البحث في الفاكسات
                     </a>
                     <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
                         data-bs-target="#addFaxModal">
-                        <i class="bi bi-plus-circle me-2"></i>
+                        <i class="bi-plus-circle me-2"></i>
                         إضافة فاكس جديد
                     </button>
                 </div>
@@ -43,7 +43,7 @@
                         <table class="table table-hover mb-0" id="faxTable">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>مسلسل</th>
+                                    <th title="معرف قاعدة البيانات">المسلسل</th>
                                     <th>رقم القيد</th>
                                     <th>التاريخ</th>
                                     <th>اسم الموضوع</th>
@@ -61,7 +61,7 @@
                                     @foreach (var document in Model.Select((doc, index) => new { doc, index }))
                                     {
                                         <tr>
-                                            <td>@(document.index + 1)</td>
+                                            <td><span class="badge bg-secondary">@(document.index + 1)</span></td>
                                             <td>
                                                 @if (!string.IsNullOrEmpty(document.doc.FaxNumber))
                                                 {
@@ -160,11 +160,11 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm" role="group">
                                                     <button type="button" class="btn btn-outline-info"
-                                                        onclick="viewFax(@document.doc.Id)" title="عرض">
+                                                        onclick="console.log('View button clicked, Database ID:', @document.doc.Id); viewFax(@document.doc.Id)" title="عرض">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
                                                     <button type="button" class="btn btn-outline-warning"
-                                                        onclick="editFax(@document.doc.Id)" title="تعديل">
+                                                        onclick="console.log('Edit button clicked, Database ID:', @document.doc.Id); editFax(@document.doc.Id)" title="تعديل">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                     <button type="button" class="btn btn-outline-success"
@@ -271,9 +271,33 @@
                         <textarea class="form-control" id="addNotes" name="Notes" rows="3"
                             placeholder="أدخل أي ملاحظات إضافية..."></textarea>
                     </div>
-                    <div class="mb-3">
-                        <label for="addFile" class="form-label">رفع ملف</label>
-                        <input type="file" class="form-control" id="addFile" accept=".pdf">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="addFile" class="form-label">رفع ملف</label>
+                            <input type="file" class="form-control" id="addFile" accept=".pdf">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" id="addIsImportant" name="IsImportant">
+                                <label class="form-check-label" for="addIsImportant">
+                                    <i class="bi bi-star text-warning me-1"></i>
+                                    إضافة إلى الالتزامات المهمة
+                                </label>
+                                <div class="form-text">سيظهر هذا الفاكس في تقويم الالتزامات</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Commitment Date Field - Only shown when IsImportant is checked -->
+                    <div class="row" id="commitmentDateRow" style="display: none;">
+                        <div class="col-md-6 mb-3">
+                            <label for="addCommitmentDate" class="form-label">
+                                <i class="bi bi-calendar-event text-warning me-1"></i>
+                                تاريخ الالتزام
+                            </label>
+                            <input type="date" class="form-control" id="addCommitmentDate" name="CommitmentDate">
+                            <div class="form-text">حدد التاريخ المطلوب للمتابعة أو التنفيذ</div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -301,25 +325,25 @@
             </div>
             <div class="modal-body">
                 <form id="editFaxForm">
-                    <input type="hidden" id="editFaxId">
+                    <input type="hidden" id="editFaxId" name="Id">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editFaxName" class="form-label">اسم الموضوع *</label>
-                            <input type="text" class="form-control" id="editFaxName" required>
+                            <input type="text" class="form-control" id="editFaxName" name="Name" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="editFaxNumber" class="form-label">رقم القيد</label>
-                            <input type="text" class="form-control" id="editFaxNumber">
+                            <input type="text" class="form-control" id="editFaxNumber" name="FaxNumber">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editSender" class="form-label">الصادر *</label>
-                            <input type="text" class="form-control" id="editSender" required>
+                            <input type="text" class="form-control" id="editSender" name="Sender" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="editRecipient" class="form-label">وارد *</label>
-                            <input type="text" class="form-control" id="editRecipient" required>
+                            <input type="text" class="form-control" id="editRecipient" name="Recipient" required>
                         </div>
                     </div>
                     <div class="row">
@@ -327,14 +351,14 @@
                             <label class="form-label">الحالة</label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="editStatus" id="editStatusSent"
+                                    <input class="form-check-input" type="radio" name="Status" id="editStatusSent"
                                         value="sent">
                                     <label class="form-check-label" for="editStatusSent">
                                         صادر
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="editStatus"
+                                    <input class="form-check-input" type="radio" name="Status"
                                         id="editStatusReceived" value="received">
                                     <label class="form-check-label" for="editStatusReceived">
                                         وارد
@@ -344,7 +368,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="editFaxType" class="form-label">الفرع/الجهة</label>
-                            <select class="form-select" id="editFaxType">
+                            <select class="form-select" id="editFaxType" name="FaxType">
                                 <option value="">اختر الفرع/الجهة</option>
                                 <option value="planning_training_operations">إتجاه التخطيط والتدريب والعمليات</option>
                                 <option value="needs_technical_affairs">إتجاه الإحتياجات والشئون الفنية</option>
@@ -360,19 +384,39 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label for="editPages" class="form-label">عدد الصفحات</label>
-                            <input type="number" class="form-control" id="editPages" min="1" value="1">
+                            <input type="number" class="form-control" id="editPages" name="NumberOfPages" min="1" value="1">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="editNotes" class="form-label">ملاحظات</label>
-                        <textarea class="form-control" id="editNotes" rows="3"
+                        <textarea class="form-control" id="editNotes" name="Notes" rows="3"
                             placeholder="أدخل أي ملاحظات إضافية..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFile" class="form-label">تحديث الملف (اختياري)</label>
+                        <input type="file" class="form-control" id="editFile" name="file" accept=".pdf">
+                        <small class="text-muted">اتركه فارغاً للإبقاء على الملف الحالي</small>
+                    </div>
+                    <div class="mb-2" id="currentFileSection" style="display:none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-file-earmark-pdf text-danger me-1"></i>
+                                <span id="currentFileName" class="fw-semibold"></span>
+                                <small id="currentFileSize" class="text-muted ms-2"></small>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="true" id="removeFileCheckbox" name="removeFile">
+                                <label class="form-check-label text-danger" for="removeFileCheckbox">
+                                    إزالة الملف الحالي
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-warning" onclick="updateFax()">
+                <button type="button" id="updateFaxBtn" class="btn btn-warning" onclick="updateFax()" disabled>
                     <i class="bi bi-save me-2"></i>
                     تحديث الفاكس
                 </button>
@@ -520,6 +564,8 @@
                 const faxType = document.getElementById('addFaxType').value;
                 const pages = document.getElementById('addPages').value;
                 const notes = document.getElementById('addNotes').value.trim();
+                const isImportant = document.getElementById('addIsImportant').checked;
+                const commitmentDate = document.getElementById('addCommitmentDate').value;
 
                 // Debug logging
                 console.log('Form data before sending:', {
@@ -530,7 +576,9 @@
                     status: status,
                     faxType: faxType,
                     pages: pages,
-                    notes: notes
+                    notes: notes,
+                    isImportant: isImportant,
+                    commitmentDate: commitmentDate
                 });
 
                 // Validation
@@ -546,6 +594,10 @@
                     showAlert('يرجى إدخال اسم الوارد', 'error');
                     return;
                 }
+                if (isImportant && !commitmentDate) {
+                    showAlert('يرجى تحديد تاريخ الالتزام للفاكس المهم', 'error');
+                    return;
+                }
 
                 // Create FormData for file upload
                 const formData = new FormData();
@@ -557,6 +609,10 @@
                 formData.append('FaxType', faxType);
                 formData.append('NumberOfPages', parseInt(pages) || 1);
                 formData.append('Notes', notes);
+                formData.append('IsImportant', isImportant);
+                if (commitmentDate) {
+                    formData.append('CommitmentDate', commitmentDate);
+                }
 
                 // Add file if selected
                 const fileInput = document.getElementById('addFile');
@@ -588,7 +644,8 @@
 
                 if (result.success) {
                     showAlert('تم حفظ الفاكس بنجاح');
-                    $('#addFaxModal').modal('hide');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addFaxModal'));
+                    modal.hide();
                     document.getElementById('addFaxForm').reset();
                     // Reset radio buttons to default
                     document.getElementById('addStatusSent').checked = true;
@@ -605,13 +662,38 @@
 
         // Update the editFax function
         async function editFax(id) {
+            console.log('Editing fax with ID:', id);
+            
             try {
                 // Fetch fax data from server
                 const response = await fetch(`/Home/GetDocument?id=${id}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const result = await response.json();
+                console.log('API Response:', result);
 
                 if (result.success && result.data) {
                     const data = result.data;
+                    console.log('Document data:', data);
+
+                    // Check if form elements exist before setting values
+                    const elements = [
+                        'editFaxId', 'editFaxName', 'editFaxNumber', 'editSender', 'editRecipient',
+                        'editStatusSent', 'editStatusReceived', 'editFaxType', 'editPages', 'editNotes'
+                    ];
+                    
+                    for (const elementId of elements) {
+                        const element = document.getElementById(elementId);
+                        if (!element) {
+                            console.error(`Form element not found: ${elementId}`);
+                            showAlert(`خطأ في نموذج التعديل: العنصر ${elementId} غير موجود`, 'error');
+                            return;
+                        }
+                    }
 
                     // Populate edit form
                     document.getElementById('editFaxId').value = data.id;
@@ -625,25 +707,52 @@
                         document.getElementById('editStatusSent').checked = true;
                     } else if (data.status === 'received') {
                         document.getElementById('editStatusReceived').checked = true;
+                    } else {
+                        // Default to sent if status is unclear
+                        document.getElementById('editStatusSent').checked = true;
                     }
 
                     document.getElementById('editFaxType').value = data.faxType || '';
                     document.getElementById('editPages').value = data.numberOfPages || 1;
                     document.getElementById('editNotes').value = data.notes || '';
 
-                    $('#editFaxModal').modal('show');
+                    // Populate file info
+                    const currentFileSection = document.getElementById('currentFileSection');
+                    const currentFileName = document.getElementById('currentFileName');
+                    const currentFileSize = document.getElementById('currentFileSize');
+                    const removeFileCheckbox = document.getElementById('removeFileCheckbox');
+                    removeFileCheckbox.checked = false;
+                    if (data.fileUrl) {
+                        currentFileSection.style.display = 'block';
+                        const fileName = data.fileUrl.split('/').pop();
+                        currentFileName.textContent = fileName;
+                        const sizeText = data.fileSize ? `(${(data.fileSize / 1024).toFixed(1)} KB)` : '';
+                        currentFileSize.textContent = sizeText;
+                    } else {
+                        currentFileSection.style.display = 'none';
+                    }
+
+                    document.getElementById('updateFaxBtn').disabled = false;
+                    const modal = new bootstrap.Modal(document.getElementById('editFaxModal'));
+                    modal.show();
                 } else {
+                    console.error('API returned error:', result);
                     showAlert(result.message || 'لم يتم العثور على الفاكس', 'error');
                 }
             } catch (error) {
                 console.error('Error loading fax for edit:', error);
-                showAlert('حدث خطأ في تحميل بيانات الفاكس', 'error');
+                showAlert(`حدث خطأ في تحميل بيانات الفاكس: ${error.message}`, 'error');
             }
         }
 
         async function updateFax() {
             try {
-                const id = document.getElementById('editFaxId').value;
+                const form = document.getElementById('editFaxForm');
+                const idVal = document.getElementById('editFaxId').value;
+                if (!idVal || isNaN(parseInt(idVal)) || parseInt(idVal) <= 0) {
+                    showAlert('معرف الفاكس غير صالح، أعد فتح نافذة التعديل', 'error');
+                    return;
+                }
                 const name = document.getElementById('editFaxName').value.trim();
                 const sender = document.getElementById('editSender').value.trim();
                 const recipient = document.getElementById('editRecipient').value.trim();
@@ -653,35 +762,35 @@
                     return;
                 }
 
-                const documentData = {
-                    id: parseInt(id),
-                    name: name,
-                    faxNumber: document.getElementById('editFaxNumber').value.trim(),
-                    sender: sender,
-                    recipient: recipient,
-                    status: document.querySelector('input[name="editStatus"]:checked').value, // Updated for radio button
-                    faxType: document.getElementById('editFaxType').value,
-                    numberOfPages: parseInt(document.getElementById('editPages').value) || 1,
-                    notes: document.getElementById('editNotes').value.trim()
-                };
+                const formData = new FormData(form);
+                // Ensure correct status selection is included
+                const statusValue = document.querySelector('input[name="Status"]:checked');
+                if (statusValue) {
+                    formData.set('Status', statusValue.value);
+                }
 
-                // Get anti-forgery token
+                // Anti-forgery token
                 const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                // Append removeFile manually depending on checkbox
+                const removeFileChecked = document.getElementById('removeFileCheckbox').checked;
+                if (removeFileChecked) {
+                    formData.append('removeFile', 'true');
+                }
 
                 const response = await fetch('/Home/UpdateDocument', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'RequestVerificationToken': token
                     },
-                    body: JSON.stringify(documentData)
+                    body: formData
                 });
 
                 const result = await response.json();
-
                 if (result.success) {
                     showAlert('تم تحديث الفاكس بنجاح');
-                    $('#editFaxModal').modal('hide');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editFaxModal'));
+                    modal.hide();
                     setTimeout(() => location.reload(), 1000);
                 } else {
                     showAlert(result.message || 'حدث خطأ أثناء تحديث الفاكس', 'error');
@@ -694,12 +803,24 @@
 
         async function viewFax(id) {
             currentDocumentId = id; // Store the current document ID
+            console.log('Viewing fax with ID:', id);
+            
             try {
                 const response = await fetch(`/Home/GetDocument?id=${id}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const result = await response.json();
+                console.log('API Response:', result);
 
                 if (result.success && result.data) {
                     const data = result.data;
+                    console.log('Document data:', data);
+                    
+                    
                     const faxType = getFaxTypeDisplay(data.faxType);
                     const status = getStatusDisplay(data.status);
 
@@ -712,13 +833,18 @@
                     document.getElementById('viewPages').textContent = `${data.numberOfPages || 1} صفحة`;
                     document.getElementById('viewNotes').textContent = data.notes || 'لا توجد ملاحظات';
                     document.getElementById('viewDateCreated').textContent = data.uploadDate || 'غير محدد';
-                    $('#viewFaxModal').modal('show');
+                    
+                    // Show modal using Bootstrap 5 vanilla JavaScript
+                    const modal = new bootstrap.Modal(document.getElementById('viewFaxModal'));
+                    modal.show();
                 } else {
+                    console.error('API returned error:', result);
                     showAlert(result.message || 'لم يتم العثور على الفاكس', 'error');
                 }
             } catch (error) {
                 console.error('Error loading fax details:', error);
-                showAlert('حدث خطأ في تحميل تفاصيل الفاكس', 'error');
+                console.error('Error stack:', error.stack);
+                showAlert('حدث خطأ في تحميل تفاصيل الفاكس: ' + (error.message || 'خطأ غير محدد'), 'error');
             }
         }
 
@@ -815,6 +941,42 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function () {
             loadStatistics();
+            
+            // Initialize commitment date toggle
+            const isImportantCheckbox = document.getElementById('addIsImportant');
+            const commitmentDateRow = document.getElementById('commitmentDateRow');
+            const commitmentDateInput = document.getElementById('addCommitmentDate');
+            
+            // Toggle commitment date field based on checkbox
+            isImportantCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    commitmentDateRow.style.display = 'block';
+                    // Set default date to tomorrow
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    commitmentDateInput.value = tomorrow.toISOString().split('T')[0];
+                    commitmentDateInput.required = true;
+                } else {
+                    commitmentDateRow.style.display = 'none';
+                    commitmentDateInput.value = '';
+                    commitmentDateInput.required = false;
+                }
+            });
+            
+            // Test database connection
+            fetch('/Home/TestDatabase')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Database test result:', data);
+                    if (!data.success) {
+                        console.error('Database connection issue:', data.message);
+                        showAlert('تحذير: مشكلة في الاتصال بقاعدة البيانات', 'warning');
+                    }
+                })
+                .catch(error => {
+                    console.error('Database test failed:', error);
+                    showAlert('تحذير: فشل اختبار قاعدة البيانات', 'warning');
+                });
         });
     </script>
 }

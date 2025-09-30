@@ -27,6 +27,17 @@ public class HomeController : Controller
         return View(result.Data ?? []);
     }
 
+    public async Task<IActionResult> Commitments()
+    {
+        var result = await _documentService.GetAllDocumentsAsync();
+        return View(result.Data ?? []);
+    }
+
+    public IActionResult DebugEnv()
+    {
+        return View();
+    }
+
     [HttpPost]
     public async Task<IActionResult> AddDocument([FromForm] Document document, IFormFile? file)
     {
@@ -37,36 +48,53 @@ public class HomeController : Controller
     [HttpGet]
     public async Task<IActionResult> GetDocument(int id)
     {
-        var result = await _documentService.GetDocumentByIdAsync(id);
-        if (result.Success && result.Data != null)
+        try
         {
-            return Json(new
+            _logger.LogInformation("Getting document with ID: {Id}", id);
+            
+            var result = await _documentService.GetDocumentByIdAsync(id);
+            if (result.Success && result.Data != null)
             {
-                success = true,
-                data = new
+                var document = result.Data;
+                
+                return Json(new
                 {
-                    id = result.Data.Id,
-                    name = result.Data.Name,
-                    faxNumber = result.Data.FaxNumber,
-                    sender = result.Data.Sender,
-                    recipient = result.Data.Recipient,
-                    status = result.Data.Status,
-                    faxType = result.Data.FaxType,
-                    numberOfPages = result.Data.NumberOfPages,
-                    notes = result.Data.Notes,
-                    fileUrl = result.Data.FileUrl,
-                    fileSize = result.Data.FileSize,
-                    uploadDate = result.Data.UploadDate.ToString("dd/MM/yyyy HH:mm")
-                }
-            });
+                    success = true,
+                    data = new
+                    {
+                        id = document.Id,
+                        name = document.Name ?? "",
+                        faxNumber = document.FaxNumber ?? "",
+                        sender = document.Sender ?? "",
+                        recipient = document.Recipient ?? "",
+                        status = document.Status ?? "",
+                        faxType = document.FaxType ?? "",
+                        numberOfPages = document.NumberOfPages,
+                        notes = document.Notes ?? "",
+                        fileUrl = document.FileUrl ?? "",
+                        fileSize = document.FileSize ?? 0,
+                        uploadDate = document.UploadDate.ToString("dd/MM/yyyy HH:mm"),
+                        dateCreated = document.DateCreated.ToString("dd/MM/yyyy HH:mm")
+                    }
+                });
+            }
+            
+            _logger.LogWarning("Document not found or service failed. ID: {Id}, Success: {Success}, Message: {Message}", 
+                id, result.Success, result.Message);
+            
+            return Json(new { success = false, message = result.Message ?? "لم يتم العثور على الفاكس" });
         }
-        return Json(new { success = result.Success, message = result.Message });
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting document with ID: {Id}", id);
+            return Json(new { success = false, message = "حدث خطأ في تحميل تفاصيل الفاكس" });
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateDocument([FromForm] Document document, IFormFile? file)
+    public async Task<IActionResult> UpdateDocument([FromForm] Document document, IFormFile? file, [FromForm] bool? removeFile)
     {
-        var result = await _documentService.UpdateDocumentAsync(document, file);
+        var result = await _documentService.UpdateDocumentAsync(document, file, removeFile ?? false);
         return Json(new { success = result.Success, message = result.Message });
     }
 
@@ -166,6 +194,76 @@ public class HomeController : Controller
             });
         }
         return Json(new { total = 0, sent = 0, received = 0 });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TestDatabase()
+    {
+        try
+        {
+            var result = await _documentService.GetAllDocumentsAsync();
+            return Json(new 
+            { 
+                success = result.Success, 
+                message = result.Message,
+                count = result.Data?.Count() ?? 0
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Database test failed");
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> DebugDocument(int id)
+    {
+        try
+        {
+            _logger.LogInformation("Debug: Getting document with ID: {Id}", id);
+            
+            // First check if the document exists in the repository
+            var allDocs = await _documentService.GetAllDocumentsAsync();
+            _logger.LogInformation("Debug: Total documents in database: {Count}", allDocs.Data?.Count() ?? 0);
+            
+            if (allDocs.Data != null)
+            {
+                var docExists = allDocs.Data.Any(d => d.Id == id);
+                _logger.LogInformation("Debug: Document with ID {Id} exists: {Exists}", id, docExists);
+                
+                if (docExists)
+                {
+                    var doc = allDocs.Data.First(d => d.Id == id);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Document found via GetAll",
+                        data = new
+                        {
+                            id = doc.Id,
+                            name = doc.Name,
+                            sender = doc.Sender,
+                            recipient = doc.Recipient
+                        }
+                    });
+                }
+            }
+            
+            // Now try GetDocumentByIdAsync
+            var result = await _documentService.GetDocumentByIdAsync(id);
+            return Json(new
+            {
+                success = result.Success,
+                message = result.Message,
+                data = result.Data != null ? new { id = result.Data.Id, name = result.Data.Name } : null
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Debug: Error getting document with ID: {Id}", id);
+            return Json(new { success = false, message = ex.Message, stackTrace = ex.StackTrace });
+        }
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

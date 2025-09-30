@@ -8,7 +8,7 @@ namespace CQCDMS.Services
         Task<ServiceResult<IEnumerable<Document>>> GetAllDocumentsAsync();
         Task<ServiceResult<Document>> GetDocumentByIdAsync(int id);
         Task<ServiceResult<Document>> CreateDocumentAsync(Document document, IFormFile? file);
-        Task<ServiceResult<Document>> UpdateDocumentAsync(Document document, IFormFile? file);
+    Task<ServiceResult<Document>> UpdateDocumentAsync(Document document, IFormFile? file, bool removeFile = false);
         Task<ServiceResult<bool>> DeleteDocumentAsync(int id);
         Task<ServiceResult<IEnumerable<Document>>> SearchDocumentsAsync(string searchTerm, string searchType, string status, string faxType, string? dateFilter = null);
         Task<ServiceResult<DocumentStatistics>> GetStatisticsAsync();

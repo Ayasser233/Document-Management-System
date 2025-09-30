@@ -69,10 +69,6 @@ CQCDMS/
 - `REPORTS_ARCHITECTURE.md` — Detailed architecture and report system documentation
 - `DEPARTMENT_MIGRATION_GUIDE.md` — Guide for updating department/branch names and migrating data
 
-## License
-
-This project is licensed under the MIT License.
-
 ---
 
 For questions, suggestions, or contributions, please open an issue or pull request on GitHub.
