@@ -353,3 +353,7 @@ xampp-linux-x64-*.run
 *.exe
 *.zip
 *.tar.gz
+# Large installer files
+*.run
+*.exe
+*.msi
